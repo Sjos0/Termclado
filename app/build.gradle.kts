@@ -19,13 +19,6 @@ android {
     versionCode = 13
     versionName = "1.9.3"
 
-    // Modo do motor para experimentos: -PengineMode=kotlin | rust | both (padrão: both = comportamento atual)
-    buildConfigField(
-        "String",
-        "ENGINE_MODE",
-        "\"" + ((project.findProperty("engineMode") as String?) ?: "both") + "\""
-    )
-
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     ndk {
       abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86_64"))

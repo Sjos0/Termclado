@@ -1,42 +1,17 @@
-name: Desempenho no emulador (RAM e armazenamento por motor)
+name: Desempenho no emulador (RAM, armazenamento e benchmark do motor)
 
 on:
-  workflow_dispatch:
-    inputs:
-      engines:
-        description: 'Motores a medir (separados por espaço): kotlin rust both'
-        required: false
-        default: 'kotlin rust both'
+  workflow_dispatch: {}
 
 permissions: {}
 
 jobs:
-  plan:
-    name: Planejar motores
-    runs-on: ubuntu-latest
-    outputs:
-      engines: ${{ steps.lista.outputs.engines }}
-    steps:
-      - id: lista
-        env:
-          PEDIDO: ${{ github.event.inputs.engines }}
-        run: |
-          python3 -c "import json,os; e=(os.environ.get('PEDIDO') or 'kotlin rust both').split(); print('engines=' + json.dumps(e))" >> "$GITHUB_OUTPUT"
-
   perf:
-    name: Medir motor ${{ matrix.engine }}
-    needs: plan
+    name: Medir desempenho no emulador
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
       contents: write
-    strategy:
-      max-parallel: 1
-      fail-fast: false
-      matrix:
-        engine: ${{ fromJSON(needs.plan.outputs.engines) }}
-    env:
-      ENGINE_LABEL: ${{ matrix.engine }}
     steps:
       - uses: actions/checkout@v4
 
@@ -73,10 +48,10 @@ jobs:
           open(p, 'w', encoding='utf-8').write(s.replace(old, new, 1))
           PYCODE
 
-      - name: Compilar APK de depuração (motor ${{ matrix.engine }})
-        run: ./gradlew --no-daemon --max-workers=1 "-Dorg.gradle.jvmargs=-Xmx1536m -XX:+UseSerialGC -Dfile.encoding=UTF-8" -PengineMode=${{ matrix.engine }} assembleDebug
+      - name: Compilar APK de depuração
+        run: ./gradlew --no-daemon --max-workers=1 "-Dorg.gradle.jvmargs=-Xmx1536m -XX:+UseSerialGC -Dfile.encoding=UTF-8" assembleDebug
 
-      - name: Medir no emulador (motor ${{ matrix.engine }})
+      - name: Medir no emulador
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
@@ -85,14 +60,13 @@ jobs:
           profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -memory 3072
-          script: bash scripts/perf/medir.sh perf-results-${{ matrix.engine }} app/build/outputs/apk/debug/app-debug.apk
+          script: bash scripts/perf/medir.sh perf-results app/build/outputs/apk/debug/app-debug.apk
 
       - name: Publicar resumo na página da execução
         if: always()
         run: |
-          d=perf-results-${{ matrix.engine }}
-          if [ -f "$d/resumo.txt" ]; then
-            { echo "## Desempenho: motor ${{ matrix.engine }}"; echo '```'; cat "$d/resumo.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          if [ -f perf-results/resumo.txt ]; then
+            { echo '## Desempenho do motor Rust'; echo '```'; cat perf-results/resumo.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Guardar resultados na branch perf-results
@@ -110,11 +84,11 @@ jobs:
           else
             git checkout -q --orphan perf-results
           fi
-          DEST="perf/${GITHUB_RUN_ID}/${ENGINE_LABEL}"
+          DEST="perf/${GITHUB_RUN_ID}"
           mkdir -p "$DEST"
-          cp -r "$GITHUB_WORKSPACE/perf-results-${ENGINE_LABEL}/." "$DEST/" 2>/dev/null || echo "sem arquivos de resultado"
+          cp -r "$GITHUB_WORKSPACE/perf-results/." "$DEST/" 2>/dev/null || echo "sem arquivos de resultado"
           git add -A
-          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -q -m "perf: execução ${GITHUB_RUN_ID} motor ${ENGINE_LABEL}" || echo "nada novo"
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -q -m "perf: execução ${GITHUB_RUN_ID}" || echo "nada novo"
           for tentativa in 1 2 3; do
             git push -q origin HEAD:refs/heads/perf-results && break
             git fetch -q origin perf-results && git rebase -q FETCH_HEAD || true
@@ -125,6 +99,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: perf-results-${{ matrix.engine }}
-          path: perf-results-${{ matrix.engine }}/
+          name: perf-results
+          path: perf-results/
           if-no-files-found: ignore

@@ -15,7 +15,7 @@ RESUMO="$OUT/resumo.txt"
 log() { echo "$*" | tee -a "$RESUMO"; echo "::notice::$*"; }
 trap 'echo "::error::medir.sh parou na linha $LINENO (código $?)"' ERR
 
-log "Motor do build: ${ENGINE_LABEL:-não informado}"
+log "Motor: Rust (libkeyboard_core.so)"
 log "Android: $(adb shell getprop ro.build.version.release | tr -d '\r') (SDK $(adb shell getprop ro.build.version.sdk | tr -d '\r'))"
 log "Modelo emulado: $(adb shell getprop ro.product.model | tr -d '\r')"
 log "APK: $APK ($(stat -c %s "$APK" 2>/dev/null || echo ?) bytes no runner)"
