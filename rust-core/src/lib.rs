@@ -113,6 +113,18 @@ mod tests {
     }
 
     #[test]
+    fn test_contrato_jni_com_dicionario_real() {
+        // Mesmas asserções que o teste Robolectric antigo fazia no Kotlin.
+        let dict = real_dict();
+        let sugestoes = get_suggestions(&dict, "", "obr");
+        assert!(!sugestoes.is_empty(), "deve haver sugestões para 'obr'");
+        assert_eq!(sugestoes[0], "obrigado");
+        assert_eq!(get_auto_correction(&dict, "", "nao"), Some("não".to_string()));
+        assert_eq!(get_auto_correction(&dict, "", "voce"), Some("você".to_string()));
+        assert_eq!(get_auto_correction(&dict, "", "casa"), None);
+    }
+
+    #[test]
     fn test_real_dictionary_never_swaps_valid_words() {
         // Regressão: estas palavras estavam sendo trocadas por outra ao pressionar espaço.
         let dict = real_dict();
