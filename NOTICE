@@ -1,5 +1,7 @@
-Teclado Leve PT-BR
+Termclado
 Copyright (c) 2026 Sjos0
+
+O código-fonte é distribuído sob a licença MIT (ver LICENSE).
 
 Este aplicativo incorpora e utiliza dados das seguintes fontes sob suas respectivas licenças:
 
@@ -15,4 +17,4 @@ Este aplicativo incorpora e utiliza dados das seguintes fontes sob suas respecti
    - Licença: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
    - Website: https://github.com/hermitdave/FrequencyWords
 
-O dicionário binário consolidado (dict_pt_br.bin) gerado a partir dessas fontes é distribuído sob os termos da licença Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0), preservando todos os direitos e avisos de licença das obras originais.
+A lista de palavras (scripts/data/palavras_pt_br.tsv) e o dicionário binário (dict_pt_br.bin) gerados a partir dessas fontes é distribuído sob os termos da licença Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0), preservando todos os direitos e avisos de licença das obras originais.

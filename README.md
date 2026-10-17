@@ -49,8 +49,8 @@ Quando você usa a digitação por voz, o áudio gravado é enviado à Groq para
 
 ## 📚 Dicionário e licenças
 
-- **Dicionário:** `app/src/main/assets/dict_pt_br.bin`, gerado por `scripts/build_dictionary.py`.
-- **Fontes:** Projeto VERO (LGPL v3.0 / MPL 1.1) e FrequencyWords (OpenSubtitles 2018, CC BY-SA 4.0). Detalhes em `NOTICE`.
+- **Dicionário:** `app/src/main/assets/dict_pt_br.bin`, gerado por `scripts/build_dictionary.py` a partir de `scripts/data/palavras_pt_br.tsv` (cerca de 36 mil palavras).
+- **Fontes:** frequência de uso do FrequencyWords (OpenSubtitles 2018, CC BY-SA 4.0) validada com o dicionário do Projeto VERO (LGPL v3.0 / MPL 1.1). Detalhes em `scripts/data/LEIA-ME.md` e `NOTICE`.
 - **Dicionário binário:** distribuído sob **CC BY-SA 4.0**, conforme `NOTICE`.
 - **Código-fonte:** **MIT** (ver `LICENSE`).
 
@@ -81,6 +81,7 @@ Quando você usa a digitação por voz, o áudio gravado é enviado à Groq para
 ├── app/src/main/jniLibs/          # libkeyboard_core.so por arquitetura
 ├── rust-core/src/                 # lib.rs, dictionary.rs, suggest.rs, jni.rs
 ├── scripts/build_dictionary.py    # Gera o dict_pt_br.bin
+│   └── data/                      # Lista de palavras e fontes (LEIA-ME.md)
 ├── docs/                          # Notas de cada versão
 └── stoplist_names.txt             # Palavras que nunca sofrem autocorreção
 ```
@@ -134,4 +135,4 @@ Cada versão tem notas em `docs/`. As releases publicadas estão na página de r
 
 - **Autocorreção nativa:** a função `nativeGetAutoCorrection` existe em Rust, mas não é usada. Trocar o motor exige testes no aparelho, porque o resultado precisa ser igual ao do motor Kotlin.
 - **Dicionário carregado duas vezes** (Kotlin e Rust). Só dá para remover depois da troca acima.
-- **Dicionário maior:** o formato atual guarda uma `String` por palavra. Com um vocabulário grande, o ideal é um blob com offsets, lido por fatias.
+- **Busca por prefixo:** hoje varre a lista inteira. Como o dicionário já está ordenado, uma busca binária deixaria a consulta mais rápida (cerca de 334 µs por consulta no host com 36 mil palavras).
