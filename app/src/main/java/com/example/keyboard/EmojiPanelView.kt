@@ -1,5 +1,7 @@
 package com.example.keyboard
 
+import com.example.onTap
+
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
@@ -65,7 +67,7 @@ class EmojiPanelView @JvmOverloads constructor(
             setTextColor(Color.parseColor("#7FCFFF"))
             textSize = 14f
             setPadding(dp(8), dp(8), dp(8), dp(8))
-            setOnClickListener { onBack?.invoke() }
+            onTap { onBack?.invoke() }
         }
         top.addView(back)
         addView(top)
@@ -94,7 +96,7 @@ class EmojiPanelView @JvmOverloads constructor(
                     textSize = 22f
                     gravity = Gravity.CENTER
                     setPadding(dp(6), dp(8), dp(6), dp(8))
-                    setOnClickListener { onEmoji?.invoke(e) }
+                    onTap { onEmoji?.invoke(e) }
                     layoutParams = GridLayout.LayoutParams().apply {
                         width = 0
                         height = dp(44)

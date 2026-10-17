@@ -2,7 +2,7 @@
 
 Teclado Android (IME) para português brasileiro, leve e feito para celulares com pouca memória. Requer **Android 8.0 (API 26)** ou superior.
 
-Versão atual: **1.9.2** (versionCode 12). Pacote: `com.aistudio.tecladoptbr.kxqpva`. Até a v1.9.1 o app se chamava "Teclado Leve PT-BR".
+Versão atual: **1.9.3** (versionCode 13). Pacote: `com.aistudio.tecladoptbr.kxqpva`. Até a v1.9.1 o app se chamava "Teclado Leve PT-BR".
 
 ---
 
@@ -38,12 +38,12 @@ Quando você usa a digitação por voz, o áudio gravado é enviado à Groq para
 
 ---
 
-## ⚙️ Núcleo nativo (Rust)
+## ⚙️ Motor (Rust)
 
-- `rust-core/` é o workspace Rust. O CI compila `libkeyboard_core.so` para `arm64-v8a`, `armeabi-v7a` e `x86_64` a cada tag de release, e o APK usa essas bibliotecas.
-- O Rust faz o carregamento do dicionário, as sugestões por prefixo, o ranqueamento por bigrama e a verificação de palavra (`isWord`).
-- A **autocorreção ainda roda no motor Kotlin** (`CompactTrieEngine`), mesmo com a biblioteca nativa carregada.
-- Se a biblioteca nativa não carregar, o app usa só o motor Kotlin.
+- O motor de sugestões e de autocorreção é o Rust, em `rust-core/`, compilado para `libkeyboard_core.so` (arm64-v8a, armeabi-v7a e x86_64). O CI compila a biblioteca a cada tag de release.
+- O motor Kotlin e o modo híbrido foram removidos: a autocorreção em Rust leva cerca de 0,1 ms, contra cerca de 3 ms no Kotlin, e a RAM dos dois é equivalente.
+- O Rust faz o carregamento do dicionário, as sugestões por prefixo, o ranqueamento por bigrama e a verificação de palavra.
+- Se a biblioteca não carregar, o teclado continua funcionando, sem sugestões.
 
 ---
 
@@ -73,7 +73,6 @@ Quando você usa a digitação por voz, o áudio gravado é enviado à Groq para
 │       ├── EmojiPanelView.kt           # Painel de emoji
 │       ├── MorePanelView.kt            # Menu da toolbar
 │       ├── NativeEngine.kt             # Ponte JNI com libkeyboard_core.so
-│       ├── CompactTrieEngine.kt        # Motor em Kotlin (autocorreção e fallback)
 │       ├── GroqSpeechClient.kt         # Transcrição por voz (Groq Whisper)
 │       ├── VoiceInputHelper.kt         # Gravação de áudio
 │       ├── KeyboardPreferences.kt      # Preferências
@@ -133,6 +132,5 @@ Cada versão tem notas em `docs/`. As releases publicadas estão na página de r
 
 ## 🧭 Pendências conhecidas
 
-- **Autocorreção nativa:** a função `nativeGetAutoCorrection` existe em Rust, mas não é usada. Trocar o motor exige testes no aparelho, porque o resultado precisa ser igual ao do motor Kotlin.
-- **Dicionário carregado duas vezes** (Kotlin e Rust). Só dá para remover depois da troca acima.
-- **Busca por prefixo:** hoje varre a lista inteira. Como o dicionário já está ordenado, uma busca binária deixaria a consulta mais rápida (cerca de 334 µs por consulta no host com 36 mil palavras).
+- **Busca por prefixo:** hoje varre a lista inteira. Como o dicionário já está ordenado, uma busca binária deixaria a consulta mais rápida (cerca de 300 µs por consulta no emulador).
+- **Licença do código:** MIT (ver `LICENSE`).

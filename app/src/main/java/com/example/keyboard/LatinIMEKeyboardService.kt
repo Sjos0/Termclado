@@ -1,5 +1,7 @@
 package com.example.keyboard
 
+import com.example.onTap
+
 import com.example.UpdateNotifier
 import android.inputmethodservice.InputMethodService
 import android.text.InputType
@@ -174,6 +176,30 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         composingWord.setLength(0)
         previousWord = ""
         lastAutoCorrection = null
+    }
+
+    override fun onUpdateSelection(
+        oldSelStart: Int,
+        oldSelEnd: Int,
+        newSelStart: Int,
+        newSelEnd: Int,
+        candidatesStart: Int,
+        candidatesEnd: Int,
+    ) {
+        super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
+        if (composingWord.isEmpty()) return
+        val ic = currentInputConnection ?: return
+        val before = ic.getTextBeforeCursor(composingWord.length, 0)?.toString().orEmpty()
+        val movedAway = newSelStart != newSelEnd ||
+            ComposingRules.compositionElsewhere(candidatesEnd, newSelEnd) ||
+            !ComposingRules.stillAtCursor(before, composingWord.toString())
+        if (movedAway) {
+            // O usuário foi para outro ponto do texto: encerra a palavra no lugar onde ela está
+            composingWord.setLength(0)
+            lastAutoCorrection = null
+            ic.finishComposingText()
+            updateCandidates()
+        }
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
@@ -564,7 +590,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
             setBackgroundColor(Color.parseColor("#3B82F6"))
             setPadding((40 * density).toInt(), (14 * density).toInt(), (40 * density).toInt(), (14 * density).toInt())
             contentDescription = "Parar gravação e enviar"
-            setOnClickListener { finishRecordingAndTranscribe() }
+            onTap { finishRecordingAndTranscribe() }
         }
         val cancel = TextView(this).apply {
             text = "Cancelar"
@@ -572,7 +598,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
             gravity = Gravity.CENTER
             setTextColor(Color.parseColor("#94A3B8"))
             setPadding(0, (12 * density).toInt(), 0, 0)
-            setOnClickListener {
+            onTap {
                 mainHandler.removeCallbacks(amplitudeRunnable)
                 voiceHelper?.cancel()
                 hideRecordingOverlay()

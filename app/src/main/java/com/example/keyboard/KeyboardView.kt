@@ -1,5 +1,8 @@
 package com.example.keyboard
 
+import com.example.TapGate
+import android.os.SystemClock
+
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -183,9 +186,8 @@ class KeyboardView @JvmOverloads constructor(
     )
 
     private val activePointers = HashMap<Int, PointerInfo>()
-    // R1: Rastreamento para debounce e prevenção de toque duplo indevido
+    // Rastreamento de ponteiros por tecla (um dedo por tecla)
     private val activeByKey = HashMap<Key, Int>()
-    private val lastAcceptedMs = HashMap<Key, Long>()
 
     // Popup de acentos e caracteres secundários
     private var popupActive = false
@@ -694,21 +696,19 @@ class KeyboardView @JvmOverloads constructor(
                 pendingLongPressPointerId = -1
 
                 if (key != null) {
-                    val now = System.currentTimeMillis()
+                    val now = SystemClock.uptimeMillis()
 
                     // Proteção contra toque duplo do hardware, para TODAS as teclas (inclusive Backspace e Shift)
                     // 1. Rejeição de ponteiro duplicado sobre a mesma tecla já pressionada
                     if (activeByKey.containsKey(key)) {
                         return true
                     }
-                    // 2. Debounce na mesma tecla se o intervalo for menor que 60 ms
-                    val lastAccepted = lastAcceptedMs[key] ?: 0L
-                    if (now - lastAccepted < 60L) {
+                    // 2. Anti toque duplo global (80 ms), para qualquer tecla, inclusive "?123" e "ABC"
+                    if (!TapGate.shared.accept(now)) {
                         return true
                     }
 
                     // Registra aceitação da tecla
-                    lastAcceptedMs[key] = now
                     activeByKey[key] = pointerId
 
                     val info = PointerInfo(key, x, y)

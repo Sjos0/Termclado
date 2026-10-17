@@ -1,5 +1,7 @@
 package com.example.keyboard
 
+import com.example.onTap
+
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
@@ -75,7 +77,7 @@ class MorePanelView @JvmOverloads constructor(
             layoutParams = lp
             isClickable = true
             isFocusable = true
-            setOnClickListener { click() }
+            onTap { click() }
         }
     }
 

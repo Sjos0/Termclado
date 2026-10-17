@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Exclusivo do build de depuração: tela de teste para o emulador do CI. -->
+    <application>
+        <activity
+            android:name=".DevTypingActivity"
+            android:exported="true" />
+    </application>
+</manifest>

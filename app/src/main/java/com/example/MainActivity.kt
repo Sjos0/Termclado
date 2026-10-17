@@ -224,7 +224,7 @@ class MainActivity : Activity() {
             theme.resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true)
             // ripple sobre fundo branco
             foreground = getDrawable(typedValue.resourceId)
-            setOnClickListener { onClick() }
+            onTap { onClick() }
             minimumHeight = dp(64)
         }
 
@@ -779,7 +779,7 @@ class MainActivity : Activity() {
             text = "Conceder permissão de microfone"
             setTextColor(Color.WHITE)
             setBackgroundColor(Color.parseColor("#1A73E8"))
-            setOnClickListener { requestMicPermission() }
+            onTap { requestMicPermission() }
         }
         val micPad = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
             topMargin = dp(12)
