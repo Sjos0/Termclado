@@ -184,6 +184,8 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         composingWord.setLength(0)
         previousWord = ""
         lastAutoCorrection = null
+        // Campo novo: a barra mostra as previsões iniciais, sem resto da palavra anterior
+        updateCandidates()
     }
 
     override fun onUpdateSelection(
@@ -457,6 +459,8 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
             ic.commitText(typed, 1)
             previousWord = typed
             composingWord.setLength(0)
+            // Sem isso, as sugestões da palavra já enviada continuavam na barra (parecia duplicada)
+            updateCandidates()
         }
     }
 
