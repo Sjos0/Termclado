@@ -93,9 +93,11 @@ adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:
 adb shell pm grant "$PKG" android.permission.READ_MEDIA_IMAGES >/dev/null 2>&1 || true
 adb shell pm grant "$PKG" android.permission.READ_EXTERNAL_STORAGE >/dev/null 2>&1 || true
 log "  permissão de imagens: $(adb shell dumpsys package "$PKG" 2>/dev/null | tr -d '\r' | grep -c 'READ_MEDIA_IMAGES: granted=true') concedida(s)"
-adb shell am force-stop "$PKG" >/dev/null 2>&1 || true
+# Reativa o Termclado: matar o processo do IME faria o Android voltar para o teclado padrão
+adb shell ime set "$IME" >/dev/null 2>&1 || true
 adb shell am start -W -n "$PKG/com.example.DevTypingActivity" >/dev/null 2>&1 || true
 sleep 10
+log "Teclado ativo na captura: $(adb shell dumpsys input_method 2>/dev/null | tr -d '\r' | grep -o 'mCurMethodId=[^ ]*' | head -1)"
 adb exec-out screencap -p > "$OUT/tela-teclado.png" 2>/dev/null || log "  falha na captura de tela"
 log "Captura de tela do teclado salva em $OUT/tela-teclado.png ($(stat -c %s "$OUT/tela-teclado.png" 2>/dev/null) bytes)"
 snapshot "teclado-visivel"
