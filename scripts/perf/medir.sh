@@ -84,6 +84,20 @@ done
 sleep 5
 log "Serviço do IME ativo antes da medição: $([ "$ativo" = 1 ] && echo sim || echo NÃO)"
 log "Teclado visível (mInputShown): $(adb shell dumpsys input_method 2>/dev/null | tr -d '\r' | grep -o 'mInputShown=[a-z]*' | head -1)"
+# Captura de tela de teste na galeria: ativa a pílula "Captura de tela" da barra (caso da referência)
+log "Preparando captura de tela de teste na galeria:"
+python3 scripts/perf/make_png.py "$OUT/Screenshot_teste.png"
+adb shell mkdir -p /sdcard/Pictures/Screenshots >/dev/null 2>&1 || true
+adb push "$OUT/Screenshot_teste.png" /sdcard/Pictures/Screenshots/Screenshot_teste.png >/dev/null 2>&1 || log "  falha no push"
+adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Pictures/Screenshots/Screenshot_teste.png >/dev/null 2>&1 || true
+adb shell pm grant "$PKG" android.permission.READ_MEDIA_IMAGES >/dev/null 2>&1 || true
+adb shell pm grant "$PKG" android.permission.READ_EXTERNAL_STORAGE >/dev/null 2>&1 || true
+log "  permissão de imagens: $(adb shell dumpsys package "$PKG" 2>/dev/null | tr -d '\r' | grep -c 'READ_MEDIA_IMAGES: granted=true') concedida(s)"
+adb shell am force-stop "$PKG" >/dev/null 2>&1 || true
+adb shell am start -W -n "$PKG/com.example.DevTypingActivity" >/dev/null 2>&1 || true
+sleep 10
+adb exec-out screencap -p > "$OUT/tela-teclado.png" 2>/dev/null || log "  falha na captura de tela"
+log "Captura de tela do teclado salva em $OUT/tela-teclado.png ($(stat -c %s "$OUT/tela-teclado.png" 2>/dev/null) bytes)"
 snapshot "teclado-visivel"
 log "Logs do motor e erros do processo (logcat):"
 adb logcat -d 2>/dev/null | tr -d '\r' | grep -iE "NativeEngine|LatinIME|keyboard_core|FATAL|AndroidRuntime|SIGABRT|Abort|dlopen|UnsatisfiedLink|Process .*has died|died" | tail -40 | while read -r l; do log "  ${l:0:220}"; done
