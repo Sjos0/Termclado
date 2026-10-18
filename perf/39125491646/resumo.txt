@@ -1,0 +1,88 @@
+Motor: Rust (libkeyboard_core.so)
+Android: 14 (SDK 34)
+Modelo emulado: sdk_gphone64_x86_64
+APK: app/build/outputs/apk/debug/app-debug.apk (11822107 bytes no runner)
+Instalação:
+  Performing Streamed Install
+Success
+Lista de IMEs instalados (diagnóstico):
+  com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME
+  com.google.android.tts/com.google.android.apps.speech.tts.googletts.settings.asr.voiceime.VoiceInputMethodService
+Benchmark do motor (processo isolado, sem IME):
+  MEM|ok=true|javaDeltaKB=3|nativeDeltaKB=7531|javaKB=2153|nativeKB=12650
+  linhas de equivalência: AC=90 SG=90
+Ativando o Termclado como teclado (com novas tentativas):
+  enable após 1 tentativa(s): ok
+  set: Input method com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService selected for user #0 
+Forçando o teclado virtual a aparecer (sem teclado físico):
+Abrindo o campo de teste:
+  Starting: Intent { cmp=com.aistudio.tecladoptbr.kxqpva/com.example.DevTypingActivity } Status: ok LaunchState: COLD Activity: com.aistudio.tecladoptbr.kxqpva/com.example.DevTypingActivity TotalTime: 1139 WaitTime: 1148 Complete 
+Serviço do IME em execução:
+Serviço do IME ainda não ativo (tentativa 1), reabrindo o campo de teste
+Serviço do IME ainda não ativo (tentativa 2), reabrindo o campo de teste
+Serviço do IME ainda não ativo (tentativa 3), reabrindo o campo de teste
+Serviço do IME ainda não ativo (tentativa 4), reabrindo o campo de teste
+Serviço do IME ainda não ativo (tentativa 5), reabrindo o campo de teste
+Serviço do IME ainda não ativo (tentativa 6), reabrindo o campo de teste
+Serviço do IME ativo antes da medição: NÃO
+Teclado visível (mInputShown): mInputShown=false
+Preparando captura de tela de teste na galeria:
+  permissão de imagens: 1 concedida(s)
+Teclado ativo na captura: mCurMethodId=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService
+Captura de tela do teclado salva em perf-results/tela-teclado.png (58389 bytes)
+RAM (teclado-visivel): PSS total = 51435 KB
+  Native Heap    14794    14756        0        0    18212    21876    15656     1361
+  TOTAL    51435    47240      276        0   160140    27369    18419     4091
+  Java Heap:     6624                          36064
+  Native Heap:    14756                          18212
+  Graphics:        0                              0
+  TOTAL PSS:    51435            TOTAL RSS:   160140      TOTAL SWAP (KB):        0
+Logs do motor e erros do processo (logcat):
+  10-18 12:03:16.593     0     0 I binder  : undelivered transaction 146871, process died.
+  10-18 12:03:16.596     0     0 I binder  : undelivered transaction 148067, process died.
+  10-18 12:03:16.599     0     0 I binder  : undelivered transaction 146932, process died.
+  10-18 12:03:17.585     0     0 I binder  : undelivered transaction 156233, process died.
+  10-18 12:03:17.417   394   394 W WVCdm   : [oemcrypto_adapter_dynamic.cpp(864):Initialize] Could not load oemcrypto from path liboemcrypto.so.  dlopen failed: library "liboemcrypto.so" not found
+  10-18 12:03:33.021   520   908 W OverlayManager: service 'idmap' died
+  10-18 12:03:53.038     0     0 I binder  : undelivered transaction 408950, process died.
+  10-18 12:04:06.967   520  2781 I ActivityManager: Process com.google.android.gms (pid 1484) has died: fg  BTOP
+  10-18 12:04:06.979   520   594 D PackageManager: Binder to instant app resolver died
+  10-18 12:04:06.990  1018  1352 D BtGatt.ScanManager: app died, unregister scanner - 2
+  10-18 12:04:06.992  1018  1352 D BtGatt.ScanManager: app died, unregister scanner - 1
+  10-18 12:04:06.993   520  2781 W ActivityManager: 	at com.android.server.am.ActivityManagerService.handleAppDiedLocked(ActivityManagerService.java:3338)
+  10-18 12:04:06.993   520  2781 W ActivityManager: 	at com.android.server.am.ActivityManagerService.appDiedLocked(ActivityManagerService.java:3453)
+  10-18 12:04:06.993   520  2781 W ActivityManager: 	at com.android.server.am.ActivityManagerService$AppDeathRecipient.binderDied(ActivityManagerService.java:1583)
+  10-18 12:04:06.993   520  2781 W ActivityManager: 	at android.os.IBinder$DeathRecipient.binderDied(IBinder.java:319)
+  10-18 12:04:06.993   520  2781 W ActivityManager: 	at com.android.server.am.ActivityManagerService.handleAppDiedLocked(ActivityManagerService.java:3338)
+  10-18 12:04:06.993   520  2781 W ActivityManager: 	at com.android.server.am.ActivityManagerService.appDiedLocked(ActivityManagerService.java:3453)
+  10-18 12:04:06.993   520  2781 W ActivityManager: 	at com.android.server.am.ActivityManagerService$AppDeathRecipient.binderDied(ActivityManagerService.java:1583)
+  10-18 12:04:06.993   520  2781 W ActivityManager: 	at android.os.IBinder$DeathRecipient.binderDied(IBinder.java:319)
+  10-18 12:04:06.998   520   890 I ActivityManager: Process com.google.android.gms.persistent (pid 1420) has died: fg  BTOP
+  10-18 12:04:08.372   520  2504 I ActivityManager: Process com.google.android.gms.ui (pid 4257) has died: fg  SVC
+  10-18 12:04:08.562     0     0 I binder  : undelivered transaction 512690, process died.
+  10-18 12:04:47.528     0     0 I binder  : undelivered transaction 271243, process died.
+  10-18 12:04:47.531     0     0 I binder  : undelivered transaction 278395, process died.
+  10-18 12:04:47.533     0     0 I binder  : undelivered transaction 278414, process died.
+  10-18 12:04:47.534     0     0 I binder  : undelivered transaction 237654, process died.
+  10-18 12:04:50.735   833   867 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#9)android.os.BinderProxy@62ea07@0
+  10-18 12:04:51.772  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:04:51.772  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:04:51.772  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:04:51.772  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:04:51.852  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:04:51.852  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:04:51.852  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:05:00.168  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:05:00.170  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:05:09.379  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:05:09.380  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:05:18.877  1744  2644 W SearchServiceCore: Abort, client detached.
+  10-18 12:05:18.997  1744  2644 W SearchServiceCore: Abort, client detached.
+Armazenamento:
+  caminho do APK instalado: /data/app/~~IR54vJOYni1oWXBvAIzh0w==/com.aistudio.tecladoptbr.kxqpva-kP54l4C628ZCJPnFhkrYFA==/base.apk
+  tamanho do APK instalado: 11822107 bytes
+  dados privados do app: 40 KB
+Estado do teclado:
+  mCurMethodId=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService
+  mInputShown=false
+Concluído. Resultados em perf-results/
