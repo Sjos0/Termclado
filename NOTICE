@@ -18,3 +18,7 @@ Este aplicativo incorpora e utiliza dados das seguintes fontes sob suas respecti
    - Website: https://github.com/hermitdave/FrequencyWords
 
 A lista de palavras (scripts/data/palavras_pt_br.tsv) e o dicionário binário (dict_pt_br.bin) gerados a partir dessas fontes é distribuído sob os termos da licença Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0), preservando todos os direitos e avisos de licença das obras originais.
+
+Anotações de emoji em português (scripts e assets/emoji_pt_br.tsv): Unicode CLDR, licença Unicode License v3 (https://www.unicode.org/license.txt).
+
+Ícones de interface: Material Icons (Google), licença Apache 2.0 (https://github.com/google/material-design-icons). Os arquivos res/drawable/ic_kb_*.xml e ic_settings_*.xml são cópias desses ícones.

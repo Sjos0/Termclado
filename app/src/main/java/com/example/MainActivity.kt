@@ -35,6 +35,7 @@ import com.example.keyboard.KeyboardPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.example.keyboard.ScreenshotSource
 
 class MainActivity : Activity() {
 
@@ -43,6 +44,7 @@ class MainActivity : Activity() {
     private fun dp(value: Int) = (value * density).toInt()
 
     private val REQUEST_MIC = 1001
+    private val REQUEST_SHOTS = 1002
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +102,13 @@ class MainActivity : Activity() {
 
         // Ordem alinhada ao Gboard: Idiomas → Preferências → Tema → Correção →
         // Dicionário → Digitação por voz → Privacidade → Sobre (+ atualizações)
+        listContainer.addView(createSettingsItem(
+            iconRes = R.drawable.ic_settings_keyboard,
+            title = "Capturas de tela na barra",
+            subtitle = if (ScreenshotSource.hasPermission(this)) "Permitido: a captura mais recente aparece na barra"
+                else "Permitir para mostrar a captura mais recente na barra"
+        ) { requestShotsPermission() })
+
         listContainer.addView(createSettingsItem(
             iconRes = R.drawable.ic_settings_language,
             title = "Idiomas",
@@ -395,7 +404,7 @@ class MainActivity : Activity() {
     private fun showPrivacyDialog() {
         AlertDialog.Builder(this)
             .setTitle("Privacidade e Segurança")
-            .setMessage("Privacidade\n\n• O teclado não grava histórico. Nenhum texto digitado é registrado ou compartilhado.\n• A digitação por voz é opcional: ela só funciona se você configurar sua chave da Groq, e nesse caso o áudio gravado é enviado à Groq para transcrição.\n• A verificação de atualizações acessa o GitHub Releases, no máximo a cada 12 horas enquanto você usa o teclado, ou quando você toca em verificar.")
+            .setMessage("Privacidade\n\n• O teclado não grava histórico. Nenhum texto digitado é registrado ou compartilhado.\n• A digitação por voz é opcional: ela só funciona se você configurar sua chave da Groq, e nesse caso o áudio gravado é enviado à Groq para transcrição.\n• A verificação de atualizações acessa o GitHub Releases, no máximo a cada 12 horas enquanto você usa o teclado, ou quando você toca em verificar.\n• Capturas de tela: só se você conceder a permissão de fotos. O teclado lê apenas a captura mais recente (nome e data) para mostrar na barra. A imagem só vai ao app que você está usando, e só quando você toca na pílula. Nada sai do aparelho por essa via.")
             .setPositiveButton("OK", null)
             .show()
     }
@@ -797,6 +806,14 @@ class MainActivity : Activity() {
             .show()
     }
 
+    private fun requestShotsPermission() {
+        if (ScreenshotSource.hasPermission(this)) {
+            Toast.makeText(this, "Acesso às capturas já permitido", Toast.LENGTH_SHORT).show()
+            return
+        }
+        requestPermissions(arrayOf(ScreenshotSource.permissionName()), REQUEST_SHOTS)
+    }
+
     private fun requestMicPermission() {
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Microfone já permitido", Toast.LENGTH_SHORT).show()
@@ -811,6 +828,14 @@ class MainActivity : Activity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_SHOTS) {
+            val ok = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            Toast.makeText(
+                this,
+                if (ok) "Capturas de tela permitidas" else "Permissão negada: a pílula de captura não aparecerá",
+                Toast.LENGTH_LONG
+            ).show()
+        }
         if (requestCode == REQUEST_MIC) {
             val ok = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
             Toast.makeText(
