@@ -111,7 +111,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
                     }
                     CandidateView.ToolbarAction.CLIPBOARD -> pasteClipboard()
                     // Tradução ainda não existe: avisa em vez de abrir o app por engano
-                    CandidateView.ToolbarAction.TRANSLATE -> Toast.makeText(this, "Tradução ainda não disponível", Toast.LENGTH_SHORT).show()
+                    CandidateView.ToolbarAction.TRANSLATE -> Toast.makeText(this@LatinIMEKeyboardService, "Tradução ainda não disponível", Toast.LENGTH_SHORT).show()
                     CandidateView.ToolbarAction.SETTINGS -> openMainActivity()
                     CandidateView.ToolbarAction.MIC -> onMicTapped()
                 }
