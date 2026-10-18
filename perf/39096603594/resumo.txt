@@ -1,0 +1,86 @@
+Motor: Rust (libkeyboard_core.so)
+Android: 14 (SDK 34)
+Modelo emulado: sdk_gphone64_x86_64
+APK: app/build/outputs/apk/debug/app-debug.apk (11801484 bytes no runner)
+Instalação:
+  Performing Streamed Install
+Success
+Lista de IMEs instalados (diagnóstico):
+  com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME
+  com.google.android.tts/com.google.android.apps.speech.tts.googletts.settings.asr.voiceime.VoiceInputMethodService
+Benchmark do motor (processo isolado, sem IME):
+  MEM|ok=true|javaDeltaKB=2|nativeDeltaKB=7532|javaKB=2147|nativeKB=12609
+  linhas de equivalência: AC=90 SG=90
+Ativando o Termclado como teclado (com novas tentativas):
+  enable após 1 tentativa(s): ok
+  set: Input method com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService selected for user #0 
+Forçando o teclado virtual a aparecer (sem teclado físico):
+Abrindo o campo de teste:
+  Starting: Intent { cmp=com.aistudio.tecladoptbr.kxqpva/com.example.DevTypingActivity } Status: ok LaunchState: WARM Activity: com.aistudio.tecladoptbr.kxqpva/com.example.DevTypingActivity TotalTime: 1165 WaitTime: 1178 Complete 
+Serviço do IME em execução:
+  * ServiceRecord{3e7c383 u0 com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService}
+  intent={act=android.view.InputMethod cmp=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService}
+  infoAllowStartForeground=[callingPackage: android; callingUid: 1000; uidState: PER ; uidBFSL: [BFSL]; intent: Intent { act=android.view.InputMethod cmp=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService }; code:PROC_STATE_PERSISTENT; tempAllowListReason:<null>; targetSdkVersion:36; callerTargetSdkVersion:34; startForegroundCount:0; bindFromPackage:null: isBindService:true]
+  intent={act=android.view.InputMethod cmp=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService}
+Serviço do IME ativo antes da medição: sim
+Teclado visível (mInputShown): mInputShown=true
+Preparando captura de tela de teste na galeria:
+  permissão de imagens: 1 concedida(s)
+Teclado ativo na captura: mCurMethodId=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService
+Captura de tela do teclado salva em perf-results/tela-teclado.png (96454 bytes)
+RAM (teclado-visivel): PSS total = 81690 KB
+  Native Heap    33909    33872       24       26    34944    40356    35025     1238
+  TOTAL    81690    71424     4112      209   171792    47668    38713     4862
+  Java Heap:    12380                          27728
+  Native Heap:    33872                          34944
+  Graphics:        0                              0
+  TOTAL PSS:    81690            TOTAL RSS:   171792       TOTAL SWAP PSS:      209
+Logs do motor e erros do processo (logcat):
+  10-18 04:20:44.270  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:20:44.270  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:20:44.270  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:20:45.590   524   817 W OverlayManager: service 'idmap' died
+  10-18 04:20:47.569  2451  2643 I GnpSdk  : [GrowthKitBootCompletedListener] GrowthKit disabled by flag. Aborting GrowthKitBootCompletedBroadcastReceiver
+  10-18 04:20:52.206   396   396 W WVCdm   : [oemcrypto_adapter_dynamic.cpp(864):Initialize] Could not load oemcrypto from path liboemcrypto.so.  dlopen failed: library "liboemcrypto.so" not found
+  10-18 04:21:00.515   524  2055 W OverlayManager: service 'idmap' died
+  10-18 04:21:21.289     0     0 I binder  : undelivered transaction 367961, process died.
+  10-18 04:21:21.291     0     0 I binder  : undelivered transaction 368348, process died.
+  10-18 04:21:21.295     0     0 I binder  : undelivered transaction 367993, process died.
+  10-18 04:21:21.615   524  2066 W OverlayManager: service 'idmap' died
+  10-18 04:21:30.747     0     0 I binder  : undelivered transaction 441475, process died.
+  10-18 04:21:30.572   524  1802 I ActivityManager: Process com.google.android.gms.persistent (pid 1418) has died: fg  BTOP
+  10-18 04:21:30.572   524  2064 D PackageManager: Binder to instant app resolver died
+  10-18 04:21:30.581  1030  1301 D BtGatt.ScanManager: app died, unregister scanner - 1
+  10-18 04:21:30.585  1030  1301 D BtGatt.ScanManager: app died, unregister scanner - 2
+  10-18 04:21:30.596   524  1802 W ActivityManager: 	at com.android.server.am.ActivityManagerService.handleAppDiedLocked(ActivityManagerService.java:3338)
+  10-18 04:21:30.596   524  1802 W ActivityManager: 	at com.android.server.am.ActivityManagerService.appDiedLocked(ActivityManagerService.java:3453)
+  10-18 04:21:30.596   524  1802 W ActivityManager: 	at com.android.server.am.ActivityManagerService$AppDeathRecipient.binderDied(ActivityManagerService.java:1583)
+  10-18 04:21:30.596   524  1802 W ActivityManager: 	at android.os.IBinder$DeathRecipient.binderDied(IBinder.java:319)
+  10-18 04:21:30.614   524  2057 I ActivityManager: Process com.google.android.gms (pid 1510) has died: fg  BFGS
+  10-18 04:21:30.951   524  2066 I ActivityManager: Process com.google.android.gms.ui (pid 4306) has died: fg  SVC
+  10-18 04:22:15.138     0     0 I binder  : undelivered transaction 363657, process died.
+  10-18 04:22:15.139     0     0 I binder  : undelivered transaction 369253, process died.
+  10-18 04:22:15.140     0     0 I binder  : undelivered transaction 369427, process died.
+  10-18 04:22:15.142     0     0 I binder  : undelivered transaction 214432, process died.
+  10-18 04:22:18.036  1565  1565 I KeyboardModeManager: KeyboardModeManager.setInputView():356 setInputView() : entry=hwn{languageTag=en-US, variant=qwerty, hasLocalizedResources=true, conditionCacheKey=_device=phone_devic
+  10-18 04:22:18.051   524   553 I ActivityManager: Start proc 5934:com.aistudio.tecladoptbr.kxqpva/u0a192 for service {com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService}
+  10-18 04:22:18.622   837   868 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#8)android.os.BinderProxy@1eca44d@0
+  10-18 04:22:19.368  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:22:19.369  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:22:19.369  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:22:19.370  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:22:19.376  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:22:19.377  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:22:19.377  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:22:33.612  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:22:33.612  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:22:43.380  1831  3125 W SearchServiceCore: Abort, client detached.
+  10-18 04:22:43.380  1831  3125 W SearchServiceCore: Abort, client detached.
+Armazenamento:
+  caminho do APK instalado: /data/app/~~Smitg1uAOzTNArfcWRO6Uw==/com.aistudio.tecladoptbr.kxqpva-FRnX2Vill8CzwzdC_klHQQ==/base.apk
+  tamanho do APK instalado: 11801484 bytes
+  dados privados do app: 56 KB
+Estado do teclado:
+  mCurMethodId=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService
+  mInputShown=true
+Concluído. Resultados em perf-results/
