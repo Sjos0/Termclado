@@ -35,6 +35,7 @@ import com.example.keyboard.KeyboardPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.example.keyboard.ScreenshotSource
 
 class MainActivity : Activity() {
 

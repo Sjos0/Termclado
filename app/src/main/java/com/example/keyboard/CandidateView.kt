@@ -10,6 +10,7 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
+import android.text.TextPaint
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -122,7 +123,7 @@ class CandidateView @JvmOverloads constructor(
         textAlign = Paint.Align.CENTER
         typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
     }
-    private val pillTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val pillTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
         typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
     }
