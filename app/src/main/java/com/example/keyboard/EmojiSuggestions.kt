@@ -11,20 +11,22 @@ import java.text.Normalizer
 object EmojiSuggestions {
     @Volatile private var table: Map<String, List<String>>? = null
 
-    /** Carrega a tabela uma vez (1.9 mil palavras, poucos KB). */
+    /** Carrega a tabela uma vez (3,5 mil palavras-chave, poucos KB). */
     fun init(context: Context) {
         if (table != null) return
         table = try {
-            context.assets.open("emoji_pt_br.tsv").bufferedReader().useLines { lines ->
-                lines.mapNotNull { line ->
-                    val parts = line.split('\t')
-                    if (parts.size == 2) parts[0] to parts[1].split('|').filter { it.isNotEmpty() } else null
-                }.toMap()
-            }
+            context.assets.open("emoji_pt_br.tsv").bufferedReader().useLines { parse(it) }
         } catch (_: Exception) {
             emptyMap()
         }
     }
+
+    /** Interpreta linhas "palavra<TAB>emoji|emoji". Também usado nos testes. */
+    internal fun parse(lines: Sequence<String>): Map<String, List<String>> =
+        lines.mapNotNull { line ->
+            val parts = line.split('\t')
+            if (parts.size == 2) parts[0] to parts[1].split('|').filter { it.isNotEmpty() } else null
+        }.toMap()
 
     /** Emojis cujo nome oficial ou palavra-chave é exatamente [word] (sem acento e minúsculas). */
     fun forWord(word: String): List<String> {
@@ -33,7 +35,7 @@ object EmojiSuggestions {
         return table?.get(key) ?: emptyList()
     }
 
-    private fun normalize(s: String): String {
+    internal fun normalize(s: String): String {
         val decomposed = Normalizer.normalize(s.lowercase(), Normalizer.Form.NFD)
         return decomposed.filter { Character.getType(it) != Character.NON_SPACING_MARK.toInt() }
     }
