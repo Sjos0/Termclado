@@ -82,6 +82,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
 
     override fun onCreate() {
         super.onCreate()
+        EmojiSuggestions.init(this)
         prefs = KeyboardPreferences(this)
         NativeEngine.init(this)
     }
@@ -463,7 +464,11 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         if (!::candidateView.isInitialized) return
         val prefix = composingWord.toString()
         if (prefix.isNotEmpty()) {
-            candidateView.setSuggestions(NativeEngine.getSuggestions(previousWord, prefix), composing = true)
+            // Como o Gboard: até 2 palavras + até 2 emojis quando a palavra tem emoji correspondente
+            val words = NativeEngine.getSuggestions(previousWord, prefix)
+            val emojis = EmojiSuggestions.forWord(prefix).take(2)
+            val list = if (emojis.isEmpty()) words.take(3) else words.take(2) + emojis
+            candidateView.setSuggestions(list, composing = true)
         } else {
             // Sem palavra em digitação: previsões da próxima palavra (bigramas) e, se houver,
             // a pílula de captura de tela. A barra não muda de layout.

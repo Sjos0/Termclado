@@ -5,6 +5,9 @@ import android.os.SystemClock
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.drawable.Drawable
+import androidx.core.content.ContextCompat
+import com.example.R
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
@@ -122,11 +125,11 @@ class KeyboardView @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
     private val actionKeyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#50B4CE")
+        color = Color.parseColor("#6EACA8")
         style = Paint.Style.FILL
     }
     private val actionPressedPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#3994AB")
+        color = Color.parseColor("#5A9592")
         style = Paint.Style.FILL
     }
     private val emojiBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -469,7 +472,7 @@ class KeyboardView @JvmOverloads constructor(
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), backgroundPaint)
 
         val density = resources.displayMetrics.density
-        val cornerRadius = 8f * density
+        val keyRadius = 5f * density
 
         for (i in keys.indices) {
             val key = keys[i]
@@ -483,14 +486,16 @@ class KeyboardView @JvmOverloads constructor(
                 else -> keyPaint
             }
 
-            canvas.drawRoundRect(key.rect, cornerRadius, cornerRadius, paint)
+            // "?123" e enter são pílulas (raio = metade da altura); as demais teclas têm cantos de 5 dp
+            val radius = if (key.code == CODE_MODE_CHANGE || key.code == CODE_ENTER) key.rect.height() / 2f else keyRadius
+            canvas.drawRoundRect(key.rect, radius, radius, paint)
 
             // Renderização do conteúdo de cada tecla
             when (key.code) {
-                CODE_SHIFT -> drawShiftIcon(canvas, key.rect)
-                CODE_BACKSPACE -> drawBackspaceIcon(canvas, key.rect)
-                CODE_ENTER -> drawActionIcon(canvas, key.rect)
-                CODE_EMOJI -> drawEmojiIcon(canvas, key.rect)
+                CODE_SHIFT -> drawKeyIcon(canvas, key.rect, iconShift, shiftIconColor())
+                CODE_BACKSPACE -> drawKeyIcon(canvas, key.rect, iconBackspace, Color.parseColor("#D9DBDC"))
+                CODE_ENTER -> drawKeyIcon(canvas, key.rect, iconReturn, Color.WHITE)
+                CODE_EMOJI -> drawKeyIcon(canvas, key.rect, iconEmoji, Color.parseColor("#D9DBDC"))
                 CODE_SPACE -> {
                     // Barra de espaço limpa
                 }
@@ -515,121 +520,39 @@ class KeyboardView @JvmOverloads constructor(
         }
     }
 
+    // Ícones originais do Material Icons (ver res/drawable/ic_kb_*)
+    private val iconShift: Drawable? = loadIcon(R.drawable.ic_kb_shift)
+    private val iconBackspace: Drawable? = loadIcon(R.drawable.ic_kb_backspace)
+    private val iconReturn: Drawable? = loadIcon(R.drawable.ic_kb_return)
+    private val iconEmoji: Drawable? = loadIcon(R.drawable.ic_kb_emoji)
+
+    private fun loadIcon(resId: Int): Drawable? {
+        val raw = ContextCompat.getDrawable(context, resId) ?: return null
+        return raw.mutate()
+    }
+
+    private fun shiftIconColor(): Int = when (shiftState) {
+        SHIFT_LOCKED -> Color.WHITE
+        SHIFT_ON -> Color.WHITE
+        else -> Color.parseColor("#9DB1BC")
+    }
+
+    /** Desenha um ícone do Material centralizado na tecla, com a cor do estado atual. */
+    private fun drawKeyIcon(canvas: Canvas, rect: RectF, icon: Drawable?, color: Int) {
+        val d = icon ?: return
+        val size = (rect.height() * 0.56f).toInt()
+        val left = (rect.centerX() - size / 2f).toInt()
+        val top = (rect.centerY() - size / 2f).toInt()
+        d.setTint(color)
+        d.setBounds(left, top, left + size, top + size)
+        d.draw(canvas)
+    }
+
     private fun isKeyPressed(key: Key): Boolean {
         for (info in activePointers.values) {
             if (info.key == key) return true
         }
         return false
-    }
-
-    private fun drawShiftIcon(canvas: Canvas, rect: RectF) {
-        val cx = rect.centerX()
-        val cy = rect.centerY()
-        val size = rect.height() * 0.22f
-
-        val color = when (shiftState) {
-            SHIFT_LOCKED -> Color.parseColor("#50B4CE")
-            SHIFT_ON -> Color.WHITE
-            else -> Color.parseColor("#9DB1BC")
-        }
-
-        iconPaint.color = color
-        iconFillPaint.color = color
-
-        tempPath.reset()
-        tempPath.moveTo(cx, cy - size)
-        tempPath.lineTo(cx + size, cy + (size * 0.2f))
-        tempPath.lineTo(cx + (size * 0.4f), cy + (size * 0.2f))
-        tempPath.lineTo(cx + (size * 0.4f), cy + size)
-        tempPath.lineTo(cx - (size * 0.4f), cy + size)
-        tempPath.lineTo(cx - (size * 0.4f), cy + (size * 0.2f))
-        tempPath.lineTo(cx - size, cy + (size * 0.2f))
-        tempPath.close()
-
-        if (shiftState != SHIFT_OFF) {
-            canvas.drawPath(tempPath, iconFillPaint)
-        } else {
-            canvas.drawPath(tempPath, iconPaint)
-        }
-    }
-
-    private fun drawBackspaceIcon(canvas: Canvas, rect: RectF) {
-        val cx = rect.centerX()
-        val cy = rect.centerY()
-        val w = rect.width() * 0.22f
-        val h = rect.height() * 0.20f
-
-        iconPaint.color = Color.parseColor("#E0EBF0")
-
-        tempPath.reset()
-        tempPath.moveTo(cx + w, cy - h)
-        tempPath.lineTo(cx - (w * 0.35f), cy - h)
-        tempPath.lineTo(cx - w, cy)
-        tempPath.lineTo(cx - (w * 0.35f), cy + h)
-        tempPath.lineTo(cx + w, cy + h)
-        tempPath.close()
-
-        canvas.drawPath(tempPath, iconPaint)
-
-        // X interno do Backspace
-        val xSize = h * 0.45f
-        val xCenter = cx + (w * 0.25f)
-        canvas.drawLine(xCenter - xSize, cy - xSize, xCenter + xSize, cy + xSize, iconPaint)
-        canvas.drawLine(xCenter + xSize, cy - xSize, xCenter - xSize, cy + xSize, iconPaint)
-    }
-
-    private fun drawActionIcon(canvas: Canvas, rect: RectF) {
-        val cx = rect.centerX()
-        val cy = rect.centerY()
-        val r = rect.height() * 0.18f
-
-        iconPaint.color = Color.WHITE
-
-        when (actionType) {
-            ACTION_TYPE_SEARCH -> {
-                canvas.drawCircle(cx - (r * 0.25f), cy - (r * 0.25f), r * 0.65f, iconPaint)
-                canvas.drawLine(cx + (r * 0.25f), cy + (r * 0.25f), cx + (r * 0.95f), cy + (r * 0.95f), iconPaint)
-            }
-            ACTION_TYPE_SEND -> {
-                tempPath.reset()
-                tempPath.moveTo(cx - r, cy - r)
-                tempPath.lineTo(cx + r, cy)
-                tempPath.lineTo(cx - r, cy + r)
-                tempPath.lineTo(cx - (r * 0.3f), cy)
-                tempPath.close()
-                canvas.drawPath(tempPath, iconFillPaint)
-            }
-            ACTION_TYPE_DONE -> {
-                canvas.drawLine(cx - r, cy, cx - (r * 0.3f), cy + (r * 0.7f), iconPaint)
-                canvas.drawLine(cx - (r * 0.3f), cy + (r * 0.7f), cx + r, cy - (r * 0.6f), iconPaint)
-            }
-            else -> {
-                // Enter ↵
-                tempPath.reset()
-                tempPath.moveTo(cx + r, cy - (r * 0.7f))
-                tempPath.lineTo(cx + r, cy + (r * 0.3f))
-                tempPath.lineTo(cx - r, cy + (r * 0.3f))
-                canvas.drawPath(tempPath, iconPaint)
-                canvas.drawLine(cx - r, cy + (r * 0.3f), cx - (r * 0.3f), cy - (r * 0.3f), iconPaint)
-                canvas.drawLine(cx - r, cy + (r * 0.3f), cx - (r * 0.3f), cy + (r * 0.9f), iconPaint)
-            }
-        }
-    }
-
-    private fun drawEmojiIcon(canvas: Canvas, rect: RectF) {
-        val cx = rect.centerX()
-        val cy = rect.centerY()
-        val r = rect.height() * 0.22f
-
-        iconPaint.color = Color.parseColor("#F1F5F7")
-
-        canvas.drawCircle(cx, cy, r, iconPaint)
-        val eyeRadius = r * 0.12f
-        iconFillPaint.color = Color.parseColor("#F1F5F7")
-        canvas.drawCircle(cx - (r * 0.35f), cy - (r * 0.2f), eyeRadius, iconFillPaint)
-        canvas.drawCircle(cx + (r * 0.35f), cy - (r * 0.2f), eyeRadius, iconFillPaint)
-        tempRect.set(cx - (r * 0.55f), cy - (r * 0.3f), cx + (r * 0.55f), cy + (r * 0.6f))
-        canvas.drawArc(tempRect, 30f, 120f, false, iconPaint)
     }
 
     private fun calculatePopupLayout(key: Key) {

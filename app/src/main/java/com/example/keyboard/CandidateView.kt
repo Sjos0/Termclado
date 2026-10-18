@@ -178,7 +178,7 @@ class CandidateView @JvmOverloads constructor(
      * false quando não há (previsões da próxima palavra, ou pílula de captura).
      */
     fun setSuggestions(list: List<String>, composing: Boolean = true) {
-        suggestions = list.take(3)
+        suggestions = list.take(4)
         this.composing = composing
         calculateLayout()
         invalidate()
