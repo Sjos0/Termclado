@@ -555,6 +555,13 @@ class KeyboardView @JvmOverloads constructor(
         return false
     }
 
+    /**
+     * Acentos do popup em maiúscula quando a tecla está em maiúscula, seja pelo estado do shift
+     * (inclusive caps lock) ou pelo rótulo que a tecla mostra na tela. Assim "E" com acento vira "É".
+     */
+    private fun isUpperPopup(key: Key): Boolean =
+        shiftState != SHIFT_OFF || key.label.firstOrNull()?.isUpperCase() == true
+
     private fun calculatePopupLayout(key: Key) {
         popupRects.clear()
         val count = key.accents.size
@@ -568,7 +575,7 @@ class KeyboardView @JvmOverloads constructor(
         val popupY = key.rect.top - itemHeight - 12f
 
         for (i in 0 until count) {
-            val charText = if (shiftState != SHIFT_OFF && key.accents[i].length == 1 && Character.isLetter(key.accents[i][0])) {
+            val charText = if (isUpperPopup(key) && key.accents[i].length == 1 && Character.isLetter(key.accents[i][0])) {
                 key.accents[i].uppercase()
             } else {
                 key.accents[i]
