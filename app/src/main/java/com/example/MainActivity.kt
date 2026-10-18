@@ -101,6 +101,13 @@ class MainActivity : Activity() {
         // Ordem alinhada ao Gboard: Idiomas → Preferências → Tema → Correção →
         // Dicionário → Digitação por voz → Privacidade → Sobre (+ atualizações)
         listContainer.addView(createSettingsItem(
+            iconRes = R.drawable.ic_settings_keyboard,
+            title = "Capturas de tela na barra",
+            subtitle = if (ScreenshotSource.hasPermission(this)) "Permitido: a captura mais recente aparece na barra"
+                else "Permitir para mostrar a captura mais recente na barra"
+        ) { requestShotsPermission() })
+
+        listContainer.addView(createSettingsItem(
             iconRes = R.drawable.ic_settings_language,
             title = "Idiomas",
             subtitle = "Português (Brasil)"
@@ -797,6 +804,14 @@ class MainActivity : Activity() {
             .show()
     }
 
+    private fun requestShotsPermission() {
+        if (ScreenshotSource.hasPermission(this)) {
+            Toast.makeText(this, "Acesso às capturas já permitido", Toast.LENGTH_SHORT).show()
+            return
+        }
+        requestPermissions(arrayOf(ScreenshotSource.permissionName()), REQUEST_SHOTS)
+    }
+
     private fun requestMicPermission() {
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Microfone já permitido", Toast.LENGTH_SHORT).show()
@@ -811,6 +826,14 @@ class MainActivity : Activity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_SHOTS) {
+            val ok = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            Toast.makeText(
+                this,
+                if (ok) "Capturas de tela permitidas" else "Permissão negada: a pílula de captura não aparecerá",
+                Toast.LENGTH_LONG
+            ).show()
+        }
         if (requestCode == REQUEST_MIC) {
             val ok = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
             Toast.makeText(

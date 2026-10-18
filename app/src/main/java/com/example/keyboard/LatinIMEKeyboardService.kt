@@ -25,6 +25,9 @@ import android.os.Looper
 import android.os.Handler
 import android.content.pm.PackageManager
 import android.Manifest
+import android.content.ClipDescription
+import androidx.core.view.inputmethod.InputContentInfoCompat
+import androidx.core.view.inputmethod.InputConnectionCompat
 
 class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionListener {
 
@@ -97,6 +100,8 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
             onToolbarOrderChanged = { order ->
                 prefs.toolbarOrder = CandidateView.serializeOrder(order)
             }
+            onGridLongPress = { toggleMorePanel() }
+            onScreenshotClick = { insertScreenshot() }
             onToolbarActionClickListener = { action ->
                 when (action) {
                     CandidateView.ToolbarAction.MENU -> toggleMorePanel()
@@ -105,7 +110,8 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
                         currentInputConnection?.sendKeyEvent(android.view.KeyEvent(android.view.KeyEvent.ACTION_UP, android.view.KeyEvent.KEYCODE_DPAD_LEFT))
                     }
                     CandidateView.ToolbarAction.CLIPBOARD -> pasteClipboard()
-                    CandidateView.ToolbarAction.TRANSLATE -> openMainActivity()
+                    // Tradução ainda não existe: avisa em vez de abrir o app por engano
+                    CandidateView.ToolbarAction.TRANSLATE -> Toast.makeText(this, "Tradução ainda não disponível", Toast.LENGTH_SHORT).show()
                     CandidateView.ToolbarAction.SETTINGS -> openMainActivity()
                     CandidateView.ToolbarAction.MIC -> onMicTapped()
                 }
@@ -173,6 +179,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
 
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
+        attribute?.contentMimeTypes = arrayOf("image/png", "image/jpeg", "image/gif", "image/webp")
         composingWord.setLength(0)
         previousWord = ""
         lastAutoCorrection = null
@@ -213,6 +220,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
             updateEnterActionLabel(info)
             checkAutoCapitalization(info)
         }
+        refreshScreenshot()
         updateCandidates()
     }
 
@@ -248,6 +256,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
     }
 
     override fun onKey(code: Int, text: String?) {
+        if (::candidateView.isInitialized) candidateView.setToolsOpen(false)
         val ic = currentInputConnection ?: return
         lastAutoCorrection = null // Qualquer digitação descarta a janela de desfazer autocorreção
 
@@ -408,6 +417,38 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         updateCandidates()
     }
 
+    @Volatile private var currentShot: ScreenshotSource.Shot? = null
+
+    /** Busca a captura recente fora da thread principal e atualiza a pílula. */
+    private fun refreshScreenshot() {
+        if (!::candidateView.isInitialized) return
+        Thread {
+            val shot = ScreenshotSource.latestRecent(this)
+            val thumb = shot?.let { ScreenshotSource.thumbnail(this, it) }
+            mainHandler.post {
+                currentShot = shot
+                candidateView.setScreenshot(if (shot != null) "Captura de tela" else null, thumb)
+            }
+        }.start()
+    }
+
+    /** Envia a captura para o app em foco, se ele aceitar imagens; senão avisa. */
+    private fun insertScreenshot() {
+        val shot = currentShot ?: return
+        val ic = currentInputConnection ?: return
+        val info = currentInputEditorInfo ?: return
+        val mimes = info.contentMimeTypes
+        if (mimes == null || mimes.none { it.startsWith("image/") }) {
+            Toast.makeText(this, "Este app não aceita imagens aqui", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val content = InputContentInfoCompat(shot.uri, ClipDescription("Captura de tela", arrayOf("image/png")), null)
+        val ok = InputConnectionCompat.commitContent(
+            ic, info, content, InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION, null
+        )
+        if (!ok) Toast.makeText(this, "Este app não aceitou a imagem", Toast.LENGTH_SHORT).show()
+    }
+
     private fun commitComposingText() {
         val ic = currentInputConnection ?: return
         if (composingWord.isNotEmpty()) {
@@ -422,12 +463,11 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         if (!::candidateView.isInitialized) return
         val prefix = composingWord.toString()
         if (prefix.isNotEmpty()) {
-            val suggestions = NativeEngine.getSuggestions(previousWord, prefix)
-            candidateView.setSuggestions(suggestions)
+            candidateView.setSuggestions(NativeEngine.getSuggestions(previousWord, prefix), composing = true)
         } else {
-            // Quando não estiver escrevendo nada ou terminou a palavra, esvazia as sugestões
-            // para que a barra volte imediatamente a exibir a toolbar com os ícones da referência
-            candidateView.setSuggestions(emptyList())
+            // Sem palavra em digitação: previsões da próxima palavra (bigramas) e, se houver,
+            // a pílula de captura de tela. A barra não muda de layout.
+            candidateView.setSuggestions(NativeEngine.getSuggestions(previousWord, ""), composing = false)
         }
     }
 

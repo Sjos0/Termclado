@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- Aviso de nova versão disponível (Android 13 ou superior pede permissão). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Captura de tela mais recente, para a pílula da barra do teclado (só com a permissão concedida) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 
     <application
         android:allowBackup="true"
