@@ -1,0 +1,85 @@
+Motor: Rust (libkeyboard_core.so)
+Android: 14 (SDK 34)
+Modelo emulado: sdk_gphone64_x86_64
+APK: app/build/outputs/apk/debug/app-debug.apk (11801484 bytes no runner)
+Instalação:
+  Performing Streamed Install
+Success
+Lista de IMEs instalados (diagnóstico):
+  com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME
+  com.google.android.tts/com.google.android.apps.speech.tts.googletts.settings.asr.voiceime.VoiceInputMethodService
+Benchmark do motor (processo isolado, sem IME):
+  MEM|ok=true|javaDeltaKB=3|nativeDeltaKB=7532|javaKB=2146|nativeKB=12589
+  linhas de equivalência: AC=90 SG=90
+Ativando o Termclado como teclado (com novas tentativas):
+  enable após 1 tentativa(s): ok
+  set: Input method com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService selected for user #0 
+Forçando o teclado virtual a aparecer (sem teclado físico):
+Abrindo o campo de teste:
+  Starting: Intent { cmp=com.aistudio.tecladoptbr.kxqpva/com.example.DevTypingActivity } Status: ok LaunchState: WARM Activity: com.aistudio.tecladoptbr.kxqpva/com.example.DevTypingActivity TotalTime: 947 WaitTime: 950 Complete 
+Serviço do IME em execução:
+  * ServiceRecord{6773eca u0 com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService}
+  intent={act=android.view.InputMethod cmp=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService}
+  infoAllowStartForeground=[callingPackage: android; callingUid: 1000; uidState: PER ; uidBFSL: [BFSL]; intent: Intent { act=android.view.InputMethod cmp=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService }; code:PROC_STATE_PERSISTENT; tempAllowListReason:<null>; targetSdkVersion:36; callerTargetSdkVersion:34; startForegroundCount:0; bindFromPackage:null: isBindService:true]
+  intent={act=android.view.InputMethod cmp=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService}
+Serviço do IME ativo antes da medição: sim
+Teclado visível (mInputShown): mInputShown=true
+Preparando captura de tela de teste na galeria:
+  permissão de imagens: 1 concedida(s)
+Captura de tela do teclado salva em perf-results/tela-teclado.png (103091 bytes)
+RAM (teclado-visivel): PSS total = 51719 KB
+  Native Heap    14624    14600        0       24    15964    21620    15679     1197
+  TOTAL    51719    47624      108      205   143764    27179    18491     3944
+  Java Heap:     7076                          24804
+  Native Heap:    14600                          15964
+  Graphics:        0                              0
+  TOTAL PSS:    51719            TOTAL RSS:   143764       TOTAL SWAP PSS:      205
+Logs do motor e erros do processo (logcat):
+  10-18 04:12:13.809  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.809  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.809  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.809  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.836  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.836  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.836  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.836  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.836  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.836  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.836  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.837  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.837  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.891  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.891  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.891  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.950  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.950  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:13.950  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:17.454     0     0 I binder  : undelivered transaction 367754, process died.
+  10-18 04:12:17.457     0     0 I binder  : undelivered transaction 370964, process died.
+  10-18 04:12:17.458     0     0 I binder  : undelivered transaction 361525, process died.
+  10-18 04:12:17.689  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:17.689  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:17.689  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:17.689  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:18.457  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:18.457  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:18.457  1763  2321 W SearchServiceCore: Abort, client detached.
+  10-18 04:12:20.331  1495  1495 I KeyboardModeManager: KeyboardModeManager.setInputView():356 setInputView() : entry=hwn{languageTag=en-US, variant=qwerty, hasLocalizedResources=true, conditionCacheKey=_device=phone_devic
+  10-18 04:12:20.348   518   549 I ActivityManager: Start proc 6012:com.aistudio.tecladoptbr.kxqpva/u0a192 for service {com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService}
+  10-18 04:12:20.661   828   862 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#9)android.os.BinderProxy@3efc814@0
+  10-18 04:12:35.066   518  2311 W ActivityTaskManager: Force removing ActivityRecord{90d53c3 u0 com.aistudio.tecladoptbr.kxqpva/com.example.DevTypingActivity t9 f}}: app died, no saved state
+  10-18 04:12:35.299   828   862 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#10)android.os.BinderProxy@10f4ea4@0
+  10-18 04:12:35.874   828   862 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#11)android.os.BinderProxy@a978796@0
+  10-18 04:12:36.834  1495  1495 I KeyboardModeManager: KeyboardModeManager.setInputView():356 setInputView() : entry=hwn{languageTag=en-US, variant=qwerty, hasLocalizedResources=true, conditionCacheKey=_device=phone_devic
+  10-18 04:12:36.885  1495  1495 I LatinIme: LatinIme.<init>():328 Language = en-US
+  10-18 04:12:36.944  1495  1495 I AndroidIME: AbstractIme.onActivate():86 LatinIme.onActivate() : EditorInfo = inputType=0x20001(Normal) imeOptions=0x40000006 privateImeOptions=null actionName=DONE actionLabel=null action
+  10-18 04:12:36.955  1495  1495 I LatinIme: LatinIme.updateEnableInlineSuggestionsOnDecoderSideFlags():1003 inline flag updated to:false
+  10-18 04:12:36.962  1495  1495 I KeyboardModeManager: KeyboardModeManager.setInputView():356 setInputView() : entry=hwn{languageTag=en-US, variant=qwerty, hasLocalizedResources=true, conditionCacheKey=_device=phone_devic
+Armazenamento:
+  caminho do APK instalado: /data/app/~~2Kp248U_LAhuIGYAfZaVTQ==/com.aistudio.tecladoptbr.kxqpva-fsbzSforU12u2c8xtT-sMQ==/base.apk
+  tamanho do APK instalado: 11801484 bytes
+  dados privados do app: 56 KB
+Estado do teclado:
+  mCurMethodId=com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME
+  mInputShown=true
+Concluído. Resultados em perf-results/
