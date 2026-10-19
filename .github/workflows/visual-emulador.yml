@@ -1,0 +1,108 @@
+name: Captura visual no emulador (geometria do celular)
+
+on:
+  workflow_dispatch: {}
+
+permissions: {}
+
+jobs:
+  visual:
+    name: Capturar e medir teclado e telas
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Habilitar KVM (aceleração do emulador)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Instalar pacotes do SDK e da imagem do emulador
+        run: |
+          sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'platform-tools' 'emulator' 'system-images;android-34;google_apis;x86_64'
+
+      - name: Dependências de Python para medir as capturas
+        run: python3 -m pip install --break-system-packages numpy scipy pillow
+
+      - name: Usar a assinatura de depuração padrão (só no CI)
+        run: |
+          python3 - <<'PYCODE'
+          p = 'app/build.gradle.kts'
+          s = open(p, encoding='utf-8').read()
+          old = 'signingConfig = signingConfigs.getByName("debugConfig")'
+          new = 'signingConfig = signingConfigs.getByName("debug")'
+          if s.count(old) != 1:
+              raise SystemExit('Expected exactly one custom debug signing assignment')
+          open(p, 'w', encoding='utf-8').write(s.replace(old, new, 1))
+          PYCODE
+
+      - name: Compilar APK de depuração
+        run: ./gradlew --no-daemon --max-workers=1 "-Dorg.gradle.jvmargs=-Xmx1536m -XX:+UseSerialGC -Dfile.encoding=UTF-8" assembleDebug
+
+      - name: Capturar no emulador (720x1520, 288 dpi)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -memory 3072
+          script: bash scripts/perf/visual.sh visual-results app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Comparar com a referência do Gboard
+        if: always()
+        run: |
+          python3 scripts/perf/comparar.py visual-results || true
+          if [ -f visual-results/comparacao.txt ]; then
+            { echo '## Comparação com o Gboard (pixels)'; echo '```'; cat visual-results/comparacao.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Guardar resultados na branch perf-results
+        if: always()
+        env:
+          TOKEN_CI: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -u
+          TMP=$(mktemp -d)
+          cd "$TMP"
+          git init -q
+          git remote add origin "https://x-access-token:${TOKEN_CI}@github.com/${GITHUB_REPOSITORY}.git"
+          if git fetch -q --depth 1 origin perf-results 2>/dev/null; then
+            git checkout -q -B perf-results FETCH_HEAD
+          else
+            git checkout -q --orphan perf-results
+          fi
+          DEST="visual/${GITHUB_RUN_ID}"
+          mkdir -p "$DEST"
+          cp -r "$GITHUB_WORKSPACE/visual-results/." "$DEST/" 2>/dev/null || echo "sem arquivos de resultado"
+          git add -A
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -q -m "visual: execução ${GITHUB_RUN_ID}" || echo "nada novo"
+          for tentativa in 1 2 3; do
+            git push -q origin HEAD:refs/heads/perf-results && break
+            git fetch -q origin perf-results && git rebase -q FETCH_HEAD || true
+            sleep 3
+          done
+          echo "Resultados em $DEST na branch perf-results"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-results
+          path: visual-results/
+          if-no-files-found: ignore
