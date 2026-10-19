@@ -1,0 +1,88 @@
+### 03-teclado-sugestoes x ref-sugestoes  (17 diferenças acima de 3 px)
+DIF barra até a 1ª linha de teclas           nosso=    85.0  gboard=    93.0  dif=   -8.0
+DIF linha 1: topo                            nosso=    85.0  gboard=    93.0  dif=   -8.0
+DIF linha 1: altura                          nosso=    77.0  gboard=    65.0  dif=  +12.0
+DIF linha 2: topo                            nosso=   175.0  gboard=   170.0  dif=   +5.0
+DIF linha 2: altura                          nosso=    77.0  gboard=    69.0  dif=   +8.0
+DIF linha 3: topo                            nosso=   264.0  gboard=   253.0  dif=  +11.0
+DIF linha 3: altura                          nosso=    77.0  gboard=    69.0  dif=   +8.0
+DIF linha 4: topo                            nosso=   353.0  gboard=   336.0  dif=  +17.0
+DIF linha 4: altura                          nosso=    77.0  gboard=    69.0  dif=   +8.0
+DIF linha 5: topo                            nosso=   443.0  gboard=   419.0  dif=  +24.0
+OK  linha 5: altura                          nosso=    77.0  gboard=    75.0  dif=   +2.0
+DIF linha de baixo, tecla 1: largura         nosso=    92.0  gboard=    98.0  dif=   -6.0
+DIF linha de baixo, tecla 2: largura         nosso=    68.0  gboard=    63.0  dif=   +5.0
+DIF linha de baixo, tecla 3: largura         nosso=    72.0  gboard=    63.0  dif=   +9.0
+DIF linha de baixo, tecla 4: largura         nosso=   263.0  gboard=   277.0  dif=  -14.0
+DIF linha de baixo, tecla 5: largura         nosso=    69.0  gboard=    63.0  dif=   +6.0
+OK  linha de baixo, tecla 6: largura         nosso=   101.0  gboard=   100.0  dif=   +1.0
+OK  QWERTY: largura da 1ª tecla              nosso=    64.0  gboard=    63.0  dif=   +1.0
+OK  QWERTY: passo entre teclas               nosso=    71.0  gboard=    71.0  dif=   +0.0
+DIF microfone: diâmetro do círculo           nosso=    53.0  gboard=    61.0  dif=   -8.0
+DIF microfone: centro x                      nosso=   681.0  gboard=   677.0  dif=   +4.0
+### 04-teclado-ferramentas x ref-ferramentas  (34 diferenças acima de 3 px)
+DIF barra até a 1ª linha de teclas           nosso=    85.0  gboard=    93.0  dif=   -8.0
+DIF linha 1: topo                            nosso=    85.0  gboard=    93.0  dif=   -8.0
+DIF linha 1: altura                          nosso=    77.0  gboard=    65.0  dif=  +12.0
+DIF linha 2: topo                            nosso=   175.0  gboard=   170.0  dif=   +5.0
+DIF linha 2: altura                          nosso=    77.0  gboard=    69.0  dif=   +8.0
+DIF linha 3: topo                            nosso=   264.0  gboard=   253.0  dif=  +11.0
+DIF linha 3: altura                          nosso=    77.0  gboard=    69.0  dif=   +8.0
+DIF linha 4: topo                            nosso=   353.0  gboard=   336.0  dif=  +17.0
+DIF linha 4: altura                          nosso=    77.0  gboard=    69.0  dif=   +8.0
+DIF linha 5: topo                            nosso=   443.0  gboard=   419.0  dif=  +24.0
+OK  linha 5: altura                          nosso=    77.0  gboard=    75.0  dif=   +2.0
+DIF linha de baixo, tecla 1: largura         nosso=    92.0  gboard=    98.0  dif=   -6.0
+DIF linha de baixo, tecla 2: largura         nosso=    68.0  gboard=    63.0  dif=   +5.0
+DIF linha de baixo, tecla 3: largura         nosso=    72.0  gboard=    63.0  dif=   +9.0
+DIF linha de baixo, tecla 4: largura         nosso=   263.0  gboard=   277.0  dif=  -14.0
+DIF linha de baixo, tecla 5: largura         nosso=    69.0  gboard=    63.0  dif=   +6.0
+OK  linha de baixo, tecla 6: largura         nosso=   101.0  gboard=   100.0  dif=   +1.0
+OK  QWERTY: largura da 1ª tecla              nosso=    64.0  gboard=    63.0  dif=   +1.0
+OK  QWERTY: passo entre teclas               nosso=    71.0  gboard=    71.0  dif=   +0.0
+DIF microfone: diâmetro do círculo           nosso=    53.0  gboard=    61.0  dif=   -8.0
+DIF microfone: centro x                      nosso=   681.0  gboard=   677.0  dif=   +4.0
+DIF ícone 1: centro x                        nosso=    35.5  gboard=    40.5  dif=   -5.0
+DIF ícone 1: largura                         nosso=    24.0  gboard=    34.0  dif=  -10.0
+DIF ícone 1: altura                          nosso=    24.0  gboard=    34.0  dif=  -10.0
+DIF ícone 2: centro x                        nosso=   152.5  gboard=   168.5  dif=  -16.0
+DIF ícone 2: largura                         nosso=    32.0  gboard=    38.0  dif=   -6.0
+DIF ícone 2: altura                          nosso=    26.0  gboard=    30.0  dif=   -4.0
+DIF ícone 3: centro x                        nosso=   265.5  gboard=   295.5  dif=  -30.0
+DIF ícone 3: largura                         nosso=    28.0  gboard=    32.0  dif=   -4.0
+OK  ícone 3: altura                          nosso=    35.0  gboard=    35.0  dif=   +0.0
+DIF ícone 4: centro x                        nosso=   378.5  gboard=   422.5  dif=  -44.0
+DIF ícone 4: largura                         nosso=    32.0  gboard=    36.0  dif=   -4.0
+DIF ícone 4: altura                          nosso=    32.0  gboard=    36.0  dif=   -4.0
+DIF ícone 5: centro x                        nosso=   492.5  gboard=   549.5  dif=  -57.0
+DIF ícone 5: largura                         nosso=    30.0  gboard=    34.0  dif=   -4.0
+DIF ícone 5: altura                          nosso=    32.0  gboard=    36.0  dif=   -4.0
+DIF ícone 6: centro x                        nosso=   680.5  gboard=   677.0  dif=   +3.5
+DIF ícone 6: largura                         nosso=    18.0  gboard=    25.0  dif=   -7.0
+DIF ícone 6: altura                          nosso=    25.0  gboard=    35.0  dif=  -10.0
+### 07-teclado-pilula x ref-pilula  (19 diferenças acima de 3 px)
+DIF barra até a 1ª linha de teclas           nosso=    85.0  gboard=    93.0  dif=   -8.0
+DIF linha 1: topo                            nosso=    85.0  gboard=    93.0  dif=   -8.0
+DIF linha 1: altura                          nosso=    77.0  gboard=    65.0  dif=  +12.0
+DIF linha 2: topo                            nosso=   175.0  gboard=   170.0  dif=   +5.0
+DIF linha 2: altura                          nosso=    77.0  gboard=    69.0  dif=   +8.0
+DIF linha 3: topo                            nosso=   264.0  gboard=   253.0  dif=  +11.0
+DIF linha 3: altura                          nosso=    77.0  gboard=    69.0  dif=   +8.0
+DIF linha 4: topo                            nosso=   353.0  gboard=   336.0  dif=  +17.0
+DIF linha 4: altura                          nosso=    77.0  gboard=    69.0  dif=   +8.0
+DIF linha 5: topo                            nosso=   443.0  gboard=   419.0  dif=  +24.0
+OK  linha 5: altura                          nosso=    77.0  gboard=    75.0  dif=   +2.0
+DIF linha de baixo, tecla 1: largura         nosso=    92.0  gboard=    98.0  dif=   -6.0
+DIF linha de baixo, tecla 2: largura         nosso=    68.0  gboard=    63.0  dif=   +5.0
+DIF linha de baixo, tecla 3: largura         nosso=    72.0  gboard=    63.0  dif=   +9.0
+DIF linha de baixo, tecla 4: largura         nosso=   263.0  gboard=   277.0  dif=  -14.0
+DIF linha de baixo, tecla 5: largura         nosso=    69.0  gboard=    63.0  dif=   +6.0
+OK  linha de baixo, tecla 6: largura         nosso=   101.0  gboard=   100.0  dif=   +1.0
+OK  QWERTY: largura da 1ª tecla              nosso=    64.0  gboard=    63.0  dif=   +1.0
+OK  QWERTY: passo entre teclas               nosso=    71.0  gboard=    71.0  dif=   +0.0
+DIF microfone: diâmetro do círculo           nosso=    53.0  gboard=    61.0  dif=   -8.0
+DIF microfone: centro x                      nosso=   681.0  gboard=   677.0  dif=   +4.0
+DIF pílula: largura                          nosso=   243.0  gboard=   272.0  dif=  -29.0
+DIF pílula: altura                           nosso=    53.0  gboard=    61.0  dif=   -8.0
+
+TOTAL de diferenças: 70
