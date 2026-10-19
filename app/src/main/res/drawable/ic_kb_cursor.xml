@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cursor de edição de texto (I entre duas setas), desenhado à mão e ajustado por sobreposição (IoU 0,89)
+     com o ícone do Gboard no celular do usuário. 1 unidade = 1 dp na caixa de 24 dp. Cor aplicada em tempo de execução. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="#FF000000" android:pathData="M8.3,3.8H15.7V5.3H12.95V18.7H15.7V20.2H8.3V18.7H11.05V5.3H8.3Z"/>
+    <path android:fillColor="#FF000000" android:pathData="M1.1,12L5.3,8.4V15.6Z"/>
+    <path android:fillColor="#FF000000" android:pathData="M22.9,12L18.7,8.4V15.6Z"/>
+</vector>

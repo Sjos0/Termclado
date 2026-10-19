@@ -103,13 +103,6 @@ class MainActivity : Activity() {
         // Ordem alinhada ao Gboard: Idiomas → Preferências → Tema → Correção →
         // Dicionário → Digitação por voz → Privacidade → Sobre (+ atualizações)
         listContainer.addView(createSettingsItem(
-            iconRes = R.drawable.ic_settings_keyboard,
-            title = "Capturas de tela na barra",
-            subtitle = if (ScreenshotSource.hasPermission(this)) "Permitido: a captura mais recente aparece na barra"
-                else "Permitir para mostrar a captura mais recente na barra"
-        ) { requestShotsPermission() })
-
-        listContainer.addView(createSettingsItem(
             iconRes = R.drawable.ic_settings_language,
             title = "Idiomas",
             subtitle = "Português (Brasil)"
@@ -150,6 +143,13 @@ class MainActivity : Activity() {
             title = "Digitação por voz",
             subtitle = if (prefs.groqApiKey.isNotBlank()) "Groq Whisper configurado" else "Configure a chave da API Groq"
         ) { showSpeechToTextDialog() })
+
+        listContainer.addView(createSettingsItem(
+            iconRes = R.drawable.ic_settings_image,
+            title = "Capturas de tela na barra",
+            subtitle = if (ScreenshotSource.hasPermission(this)) "Permitido: a captura mais recente aparece na barra"
+                else "Permitir para mostrar a captura mais recente na barra"
+        ) { requestShotsPermission() })
 
         listContainer.addView(createSettingsItem(
             iconRes = R.drawable.ic_settings_privacy,
