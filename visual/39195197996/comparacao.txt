@@ -1,0 +1,8 @@
+### 03-teclado-sugestoes x ref-sugestoes  (1 diferenças acima de 3 px)
+ERRO: teclado não encontrado
+### 04-teclado-ferramentas x ref-ferramentas  (1 diferenças acima de 3 px)
+ERRO: teclado não encontrado
+### 07-teclado-pilula x ref-pilula  (1 diferenças acima de 3 px)
+ERRO: teclado não encontrado
+
+TOTAL de diferenças: 3

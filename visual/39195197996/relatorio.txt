@@ -1,0 +1,14 @@
+Tela original: Physical size: 1080x2400 | Physical density: 420
+Tela usada:    Override size: 720x1520 | Override density: 288
+Instalação: Success
+Teclado ativo: mCurMethodId=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService
+Teclado ainda não visível (tentativa 1)
+Teclado ainda não visível (tentativa 2)
+Teclado ainda não visível (tentativa 3)
+Teclado ainda não visível (tentativa 4)
+Teclado ainda não visível (tentativa 5)
+Teclado ainda não visível (tentativa 6)
+Teclado visível: mInputShown=false
+Topo do teclado: 0 px; linha dos ícones da barra: y=38
+TESTE toque indevido na barra: OK (continua em com.aistudio.tecladoptbr.kxqpva/com.example.DevTypingActivity)
+Concluído. Imagens em visual-results/
