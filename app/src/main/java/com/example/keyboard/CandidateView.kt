@@ -77,17 +77,19 @@ class CandidateView @JvmOverloads constructor(
     )
 
     // ---- Geometria (dp, medida na referência do Gboard a 2 px/dp) ----
-    private val barHeightDp = 41f
-    private val gridSlotDp = 41f
-    private val gridIconDp = 18f
-    private val micDiameterDp = 30f
-    private val micRightMarginDp = 6.5f
-    private val toolIconDp = 22f
-    private val toolStepDp = 63f
-    private val toolFirstCenterDp = 85f
-    private val pillWidthDp = 135f
-    private val pillHeightDp = 30f
+    private val barHeightDp = 43f
+    // Os 6 ícones (grade, 4 ferramentas, microfone) ficam igualmente espaçados, como no Gboard:
+    // centro da grade a 22,5 dp da esquerda e do microfone a 23,9 dp da direita.
+    private val leftCenterDp = 22.5f
+    private val rightCenterDp = 23.9f
+    private val micDiameterDp = 34f
+    private val gridBoxDp = 25f
+    private val micBoxDp = 23.5f
+    private val toolBoxDp = 24f
+    private val pillWidthDp = 151f
+    private val pillHeightDp = 34f
     private val dividerHeightDp = 20f
+    private val sideSlotDp = 45f
 
     // ---- Estado de toque ----
     private enum class Hit { NONE, GRID, MIC, PILL, SUGGESTION, TOOL }
@@ -140,7 +142,7 @@ class CandidateView @JvmOverloads constructor(
     private fun reloadIcons() {
         gridIcon = loadTinted(R.drawable.ic_kb_grid)
         closeIcon = loadTinted(R.drawable.ic_close_24)
-        iconMap[ToolbarAction.CURSOR] = loadTinted(R.drawable.ic_toolbar_cursor)
+        iconMap[ToolbarAction.CURSOR] = loadTinted(R.drawable.ic_kb_cursor)
         iconMap[ToolbarAction.CLIPBOARD] = loadTinted(R.drawable.ic_kb_clipboard)
         iconMap[ToolbarAction.TRANSLATE] = loadTinted(R.drawable.ic_kb_translate)
         iconMap[ToolbarAction.SETTINGS] = loadTinted(R.drawable.ic_kb_settings)
@@ -214,36 +216,43 @@ class CandidateView @JvmOverloads constructor(
         calculateLayout()
     }
 
+    /** Centro x (px) do ícone de índice 0..5: grade, 4 ferramentas, microfone. */
+    private fun slotCenter(i: Int): Float {
+        val d = density
+        val left = leftCenterDp * d
+        val right = width - rightCenterDp * d
+        return left + i * (right - left) / 5f
+    }
+
     private fun calculateLayout() {
         val d = density
         val w = width.toFloat()
         val h = height.toFloat()
         if (w <= 0f || h <= 0f) return
 
-        gridRect.set(0f, 0f, gridSlotDp * d, h)
-        val micCx = w - (micRightMarginDp + micDiameterDp / 2f) * d
+        val step = (slotCenter(5) - slotCenter(0)) / 5f
+        gridRect.set(0f, 0f, slotCenter(0) + step / 2f, h)
         val micR = micDiameterDp * d / 2f
-        micRect.set(micCx - micR, h / 2f - micR, micCx + micR, h / 2f + micR)
+        micRect.set(slotCenter(5) - micR, h / 2f - micR, slotCenter(5) + micR, h / 2f + micR)
 
-        val left = gridSlotDp * d
-        val right = micRect.left - 4f * d
+        val left = sideSlotDp * d
+        val right = w - sideSlotDp * d
         suggestionRects.clear()
         toolRects.clear()
         pillRect.setEmpty()
 
         if (toolsOpen) {
             for (i in toolActions.indices) {
-                val cx = (toolFirstCenterDp + i * toolStepDp) * d
-                toolRects.add(RectF(cx - toolStepDp * d / 2f, 0f, cx + toolStepDp * d / 2f, h))
+                val cx = slotCenter(i + 1)
+                toolRects.add(RectF(cx - step / 2f, 0f, cx + step / 2f, h))
             }
             return
         }
 
         if (!composing && screenshotLabel != null) {
-            val cx = (left + right) / 2f
             val pw = pillWidthDp * d
             val ph = pillHeightDp * d
-            pillRect.set(cx - pw / 2f, h / 2f - ph / 2f, cx + pw / 2f, h / 2f + ph / 2f)
+            pillRect.set(w / 2f - pw / 2f, h / 2f - ph / 2f, w / 2f + pw / 2f, h / 2f + ph / 2f)
             return
         }
 
@@ -267,21 +276,21 @@ class CandidateView @JvmOverloads constructor(
 
         // Grade (ou X quando um painel está aberto)
         val gridPressed = pressedHit == Hit.GRID
-        if (gridPressed) canvas.drawCircle(gridRect.centerX(), h / 2f, 15f * d, pressPaint)
-        drawIconAt(canvas, if (menuOpen) closeIcon else gridIcon, gridRect.centerX(), h / 2f, gridIconDp * d)
+        if (gridPressed) canvas.drawCircle(slotCenter(0), h / 2f, 17f * d, pressPaint)
+        drawIconAt(canvas, if (menuOpen) closeIcon else gridIcon, slotCenter(0), h / 2f, gridBoxDp * d)
 
         // Microfone num círculo
         canvas.drawCircle(micRect.centerX(), micRect.centerY(), micRect.width() / 2f, micPaint)
         if (pressedHit == Hit.MIC) canvas.drawCircle(micRect.centerX(), micRect.centerY(), micRect.width() / 2f, pressPaint)
-        drawIconAt(canvas, iconMap[ToolbarAction.MIC], micRect.centerX(), micRect.centerY(), 17f * d)
+        drawIconAt(canvas, iconMap[ToolbarAction.MIC], micRect.centerX(), micRect.centerY(), micBoxDp * d)
 
         if (toolsOpen) {
             for (i in toolRects.indices) {
                 val r = toolRects[i]
                 if (pressedHit == Hit.TOOL && pressedIndex == i) {
-                    canvas.drawCircle(r.centerX(), h / 2f, 16f * d, pressPaint)
+                    canvas.drawCircle(r.centerX(), h / 2f, 17f * d, pressPaint)
                 }
-                drawIconAt(canvas, iconMap[toolActions[i]], r.centerX(), h / 2f, toolIconDp * d)
+                drawIconAt(canvas, iconMap[toolActions[i]], r.centerX(), h / 2f, toolBoxDp * d)
             }
             return
         }

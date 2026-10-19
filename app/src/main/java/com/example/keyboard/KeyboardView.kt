@@ -39,6 +39,10 @@ class KeyboardView @JvmOverloads constructor(
     }
 
     companion object {
+        // dp medidos na captura do Gboard (720 px de largura = 400 dp): topo e altura de cada linha de teclas
+        const val KEYS_TOTAL_DP = 241.4f
+        val ROW_TOPS_DP = floatArrayOf(8.7f, 51.4f, 97.6f, 143.7f, 189.8f)
+        val ROW_HEIGHTS_DP = floatArrayOf(36.7f, 38.9f, 38.9f, 38.9f, 42.2f)
         const val CODE_SHIFT = -1
         const val CODE_BACKSPACE = -2
         const val CODE_ENTER = -3
@@ -245,8 +249,8 @@ class KeyboardView @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val width = MeasureSpec.getSize(widthMeasureSpec)
         val density = resources.displayMetrics.density
-        // 5 linhas com proporção ergonômica ideal para digitação rápida
-        val height = (255 * density).toInt()
+        // Altura das teclas igual à do Gboard medida no mesmo aparelho (1,8 px/dp): 241,4 dp
+        val height = (KEYS_TOTAL_DP * density).toInt()
         setMeasuredDimension(width, height)
     }
 
@@ -272,9 +276,8 @@ class KeyboardView @JvmOverloads constructor(
         val w = width.toFloat()
         val h = height.toFloat()
         val density = resources.displayMetrics.density
-        // R4 e R5: Geometria em dp proporcional à referência (4 dp de vão horizontal, 6.5 dp vertical)
-        val paddingH = 4f * density
-        val paddingV = 6.5f * density
+        // Geometria medida no Gboard (1,8 px/dp): vão horizontal de 8 px = 4,44 dp
+        val paddingH = 4.44f * density
         val rows = when (keyboardMode) {
             MODE_TEXT -> getTextRows()
             MODE_SYMBOLS -> getSymbolRows()
@@ -283,8 +286,11 @@ class KeyboardView @JvmOverloads constructor(
         }
 
         val numRows = rows.size
-        val rowHeight = (h - (paddingV * (numRows + 1))) / numRows
-        var currentY = paddingV
+        // Com 5 linhas usa topo e altura de cada linha do Gboard; com outro número, divide por igual
+        val useTable = numRows == 5
+        val uniformGap = 7.2f * density
+        val uniformTop = ROW_TOPS_DP[0] * density
+        val uniformHeight = (h - uniformTop - 9.4f * density - uniformGap * (numRows - 1)) / numRows
 
         // Largura base de tecla para linhas de 10 teclas (linhas 1 e 2)
         val standardAvailableWidth = w - (paddingH * 11)
@@ -292,6 +298,8 @@ class KeyboardView @JvmOverloads constructor(
 
         for (rowIndex in rows.indices) {
             val row = rows[rowIndex]
+            val rowTop = if (useTable) ROW_TOPS_DP[rowIndex] * density else uniformTop + rowIndex * (uniformHeight + uniformGap)
+            val rowHeight = if (useTable) ROW_HEIGHTS_DP[rowIndex] * density else uniformHeight
             val totalWeight = row.sumOf { it.widthWeight.toDouble() }.toFloat()
 
             // Se for a linha 3 (a..l com 9 teclas de peso 1.0 no modo texto),
@@ -316,7 +324,7 @@ class KeyboardView @JvmOverloads constructor(
                 } else {
                     (keyDef.widthWeight / totalWeight) * availableWidth
                 }
-                keyDef.rect.set(currentX, currentY, currentX + keyWidth, currentY + rowHeight)
+                keyDef.rect.set(currentX, rowTop, currentX + keyWidth, rowTop + rowHeight)
 
                 if (keyDef.code > 0 && Character.isLetter(keyDef.code)) {
                     keyDef.label = if (shiftState != SHIFT_OFF) {
@@ -329,7 +337,6 @@ class KeyboardView @JvmOverloads constructor(
                 keys.add(keyDef)
                 currentX += keyWidth + paddingH
             }
-            currentY += rowHeight + paddingV
         }
     }
 
@@ -370,7 +377,7 @@ class KeyboardView @JvmOverloads constructor(
 
         // Linha 4: Shift, z x c v b n m, Backspace
         val row4 = listOf(
-            Key(CODE_SHIFT, "⇧", widthWeight = 1.45f, isSpecial = true),
+            Key(CODE_SHIFT, "⇧", widthWeight = 1.56f, isSpecial = true),
             Key('z'.code, "z"),
             Key('x'.code, "x"),
             Key('c'.code, "c", accents = listOf("ç")),
@@ -378,17 +385,17 @@ class KeyboardView @JvmOverloads constructor(
             Key('b'.code, "b"),
             Key('n'.code, "n", accents = listOf("ñ")),
             Key('m'.code, "m"),
-            Key(CODE_BACKSPACE, "⌫", widthWeight = 1.45f, isSpecial = true)
+            Key(CODE_BACKSPACE, "⌫", widthWeight = 1.56f, isSpecial = true)
         )
 
         // Linha 5: Botão de Símbolos ?123, vírgula, Emoji, Espaço, ponto, Ação
         val row5 = listOf(
-            Key(CODE_MODE_CHANGE, "?123", widthWeight = 1.35f, isSpecial = true),
+            Key(CODE_MODE_CHANGE, "?123", widthWeight = 1.55f, isSpecial = true),
             Key(','.code, ",", widthWeight = 1.0f, isSpecial = true),
-            Key(CODE_EMOJI, "😊", accents = listOf("😊", "😂", "❤️", "👍", "👏", "🙏", "😍", "🔥", "🎉", "😎"), widthWeight = 1.05f, isSpecial = true, isEmoji = true),
-            Key(CODE_SPACE, "espaço", widthWeight = 3.8f),
+            Key(CODE_EMOJI, "😊", accents = listOf("😊", "😂", "❤️", "👍", "👏", "🙏", "😍", "🔥", "🎉", "😎"), widthWeight = 1.0f, isSpecial = true, isEmoji = true),
+            Key(CODE_SPACE, "espaço", widthWeight = 4.38f),
             Key('.'.code, ".", widthWeight = 1.0f, isSpecial = true, accents = listOf("!", "?", "@", "-", "_", "/")),
-            Key(CODE_ENTER, "action", widthWeight = 1.45f, isAction = true)
+            Key(CODE_ENTER, "action", widthWeight = 1.58f, isAction = true)
         )
 
         return listOf(row1, row2, row3, row4, row5)
@@ -415,19 +422,19 @@ class KeyboardView @JvmOverloads constructor(
         )
         // Linha 4: Botão =\< (Acessar Mais Símbolos) e outros
         val row4 = listOf(
-            Key(CODE_MORE_SYMBOLS, "=\\<", widthWeight = 1.45f, isSpecial = true),
+            Key(CODE_MORE_SYMBOLS, "=\\<", widthWeight = 1.56f, isSpecial = true),
             Key('~'.code, "~"), Key('`'.code, "`"), Key('<'.code, "<"), Key('>'.code, ">"),
             Key('='.code, "="), Key('_'.code, "_"), Key('|'.code, "|"),
-            Key(CODE_BACKSPACE, "⌫", widthWeight = 1.45f, isSpecial = true)
+            Key(CODE_BACKSPACE, "⌫", widthWeight = 1.56f, isSpecial = true)
         )
         // Linha 5: Botão ABC (retornar instantaneamente às letras)
         val row5 = listOf(
-            Key(CODE_MODE_CHANGE, "ABC", widthWeight = 1.35f, isSpecial = true),
+            Key(CODE_MODE_CHANGE, "ABC", widthWeight = 1.55f, isSpecial = true),
             Key(','.code, ",", widthWeight = 1.0f, isSpecial = true),
-            Key(CODE_EMOJI, "😊", widthWeight = 1.05f, isSpecial = true, isEmoji = true),
-            Key(CODE_SPACE, "espaço", widthWeight = 3.8f),
+            Key(CODE_EMOJI, "😊", widthWeight = 1.0f, isSpecial = true, isEmoji = true),
+            Key(CODE_SPACE, "espaço", widthWeight = 4.38f),
             Key('.'.code, ".", widthWeight = 1.0f, isSpecial = true),
-            Key(CODE_ENTER, "action", widthWeight = 1.45f, isAction = true)
+            Key(CODE_ENTER, "action", widthWeight = 1.58f, isAction = true)
         )
         return listOf(row1, row2, row3, row4, row5)
     }
@@ -450,19 +457,19 @@ class KeyboardView @JvmOverloads constructor(
         )
         // Linha 4: Botão ?123 para voltar aos símbolos anteriores
         val row4 = listOf(
-            Key(CODE_MORE_SYMBOLS, "?123", widthWeight = 1.45f, isSpecial = true),
+            Key(CODE_MORE_SYMBOLS, "?123", widthWeight = 1.56f, isSpecial = true),
             Key('<'.code, "<"), Key('>'.code, ">"), Key('{'.code, "{"), Key('}'.code, "}"),
             Key('='.code, "="), Key('_'.code, "_"), Key('‰'.code, "‰"),
-            Key(CODE_BACKSPACE, "⌫", widthWeight = 1.45f, isSpecial = true)
+            Key(CODE_BACKSPACE, "⌫", widthWeight = 1.56f, isSpecial = true)
         )
         // Linha 5: Botão ABC para voltar às letras
         val row5 = listOf(
-            Key(CODE_MODE_CHANGE, "ABC", widthWeight = 1.35f, isSpecial = true),
+            Key(CODE_MODE_CHANGE, "ABC", widthWeight = 1.55f, isSpecial = true),
             Key(','.code, ",", widthWeight = 1.0f, isSpecial = true),
-            Key(CODE_EMOJI, "😊", widthWeight = 1.05f, isSpecial = true, isEmoji = true),
-            Key(CODE_SPACE, "espaço", widthWeight = 3.8f),
+            Key(CODE_EMOJI, "😊", widthWeight = 1.0f, isSpecial = true, isEmoji = true),
+            Key(CODE_SPACE, "espaço", widthWeight = 4.38f),
             Key('.'.code, ".", widthWeight = 1.0f, isSpecial = true),
-            Key(CODE_ENTER, "action", widthWeight = 1.45f, isAction = true)
+            Key(CODE_ENTER, "action", widthWeight = 1.58f, isAction = true)
         )
         return listOf(row1, row2, row3, row4, row5)
     }
