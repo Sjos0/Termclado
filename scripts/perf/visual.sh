@@ -34,10 +34,18 @@ adb wait-for-device
 until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do sleep 3; done
 adb shell input keyevent 82 >/dev/null 2>&1 || true
 
+# O emulador mostra "Pixel Launcher isn't responding" quando a densidade muda; esconde esses diálogos
+adb shell settings put global hide_error_dialogs 1 >/dev/null 2>&1 || true
+adb shell settings put global window_animation_scale 0 >/dev/null 2>&1 || true
+adb shell settings put global transition_animation_scale 0 >/dev/null 2>&1 || true
+adb shell settings put global animator_duration_scale 0 >/dev/null 2>&1 || true
 log "Tela original: $(adb shell wm size | tr -d '\r' | tail -1) | $(adb shell wm density | tr -d '\r' | tail -1)"
 adb shell wm size 720x1520 >/dev/null
 adb shell wm density 288 >/dev/null
-sleep 6
+sleep 20
+adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null 2>&1 || true
+adb shell input keyevent KEYCODE_HOME >/dev/null 2>&1 || true
+sleep 3
 log "Tela usada:    $(adb shell wm size | tr -d '\r' | tail -1) | $(adb shell wm density | tr -d '\r' | tail -1)"
 
 log "Instalação: $(adb install -r "$APK" 2>&1 | tr -d '\r' | tail -1)"
