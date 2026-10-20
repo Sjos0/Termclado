@@ -499,7 +499,7 @@ class KeyboardView @JvmOverloads constructor(
 
             // Renderização do conteúdo de cada tecla
             when (key.code) {
-                CODE_SHIFT -> drawKeyIcon(canvas, key.rect, iconShift, shiftIconColor())
+                CODE_SHIFT -> drawKeyIcon(canvas, key.rect, if (shiftState == SHIFT_LOCKED) iconShift else iconShiftOutline, shiftIconColor())
                 CODE_BACKSPACE -> drawKeyIcon(canvas, key.rect, iconBackspace, Color.parseColor("#D9DBDC"))
                 CODE_ENTER -> drawKeyIcon(canvas, key.rect, iconReturn, Color.WHITE)
                 CODE_EMOJI -> drawKeyIcon(canvas, key.rect, iconEmoji, Color.parseColor("#D9DBDC"))
@@ -510,10 +510,12 @@ class KeyboardView @JvmOverloads constructor(
                     val isSpecialText = key.isSpecial || key.label.length > 1
                     val fontPaint = if (isSpecialText) specialTextPaint else textPaint
 
-                    fontPaint.textSize = when {
-                        key.label.length > 2 -> key.rect.height() * 0.32f
-                        else -> key.rect.height() * 0.44f
-                    }
+                    // Letras e dígitos: 52% da altura da tecla, reduzidos só se a largura passar de 74% da tecla
+                    fontPaint.textSize = if (key.label.length > 2) key.rect.height() * 0.32f else
+                        TextFit.fitSize(key.rect.height() * 0.52f, key.rect.height() * 0.36f, key.rect.width() * 0.74f) { size ->
+                            fontPaint.textSize = size
+                            fontPaint.measureText(key.label)
+                        }
 
                     val textY = key.rect.centerY() - ((fontPaint.descent() + fontPaint.ascent()) / 2)
                     canvas.drawText(key.label, key.rect.centerX(), textY, fontPaint)
@@ -529,6 +531,7 @@ class KeyboardView @JvmOverloads constructor(
 
     // Ícones originais do Material Icons (ver res/drawable/ic_kb_*)
     private val iconShift: Drawable? = loadIcon(R.drawable.ic_kb_shift)
+    private val iconShiftOutline: Drawable? = loadIcon(R.drawable.ic_kb_shift_outline)
     private val iconBackspace: Drawable? = loadIcon(R.drawable.ic_kb_backspace)
     private val iconReturn: Drawable? = loadIcon(R.drawable.ic_kb_return)
     private val iconEmoji: Drawable? = loadIcon(R.drawable.ic_kb_emoji)
