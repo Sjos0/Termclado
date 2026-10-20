@@ -499,7 +499,7 @@ class KeyboardView @JvmOverloads constructor(
 
             // Renderização do conteúdo de cada tecla
             when (key.code) {
-                CODE_SHIFT -> drawKeyIcon(canvas, key.rect, if (shiftState == SHIFT_LOCKED) iconShift else iconShiftOutline, shiftIconColor())
+                CODE_SHIFT -> drawKeyIcon(canvas, key.rect, if (shiftState == SHIFT_OFF) iconShiftOutline else iconShift, shiftIconColor())
                 CODE_BACKSPACE -> drawKeyIcon(canvas, key.rect, iconBackspace, Color.parseColor("#D9DBDC"))
                 CODE_ENTER -> drawKeyIcon(canvas, key.rect, iconReturn, Color.WHITE)
                 CODE_EMOJI -> drawKeyIcon(canvas, key.rect, iconEmoji, Color.parseColor("#D9DBDC"))
