@@ -25,6 +25,14 @@ import android.os.Looper
 import android.os.Handler
 import android.content.pm.PackageManager
 import android.Manifest
+import android.os.Build
+import android.os.Bundle
+import android.util.Size
+import android.view.inputmethod.InlineSuggestion
+import android.view.inputmethod.InlineSuggestionsRequest
+import android.view.inputmethod.InlineSuggestionsResponse
+import android.widget.inline.InlinePresentationSpec
+import androidx.annotation.RequiresApi
 import android.content.ClipDescription
 import androidx.core.view.inputmethod.InputContentInfoCompat
 import androidx.core.view.inputmethod.InputConnectionCompat
@@ -75,6 +83,8 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
     private lateinit var candidateView: CandidateView
 
     private val composingWord = StringBuilder()
+    // #44: sugestão de autopreenchimento do sistema (API 30+), usada ao tocar na pílula
+    private var pendingAutofill: InlineSuggestion? = null
     private val userDict get() = LearningStore.dictionary(this)
     private val personalBigrams get() = LearningStore.bigrams(this)
     // Seleção atual informada pelo editor (-1 = desconhecida), para o backspace apagar o intervalo
@@ -108,6 +118,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
             }
             onGridLongPress = { toggleMorePanel() }
             onScreenshotClick = { insertScreenshot() }
+            onAutofillClick = { fillWithAutofill() }
             onToolbarActionClickListener = { action ->
                 when (action) {
                     CandidateView.ToolbarAction.MENU -> toggleMorePanel()
@@ -190,6 +201,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         previousWord = ""
         selStart = -1
         selEnd = -1
+        clearAutofill()
         lastAutoCorrection = null
         // Campo novo: a barra mostra as previsões iniciais, sem resto da palavra anterior
         updateCandidates()
@@ -485,6 +497,47 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         }
     }
 
+    /** Gate: o preenchimento por sugestão inline só existe a partir do Android 11 (API 30). */
+    private val inlineAutofillSupported: Boolean
+        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onCreateInlineSuggestionsRequest(uiExtras: Bundle): InlineSuggestionsRequest? {
+        if (!inlineAutofillSupported) return null
+        val d = resources.displayMetrics.density
+        // Tamanho máximo = pílula da barra (151 x 34 dp); pede só 1 sugestão
+        val spec = InlinePresentationSpec.Builder(Size(0, 0), Size((151 * d).toInt(), (34 * d).toInt())).build()
+        return InlineSuggestionsRequest.Builder(listOf(spec)).setMaxSuggestionCount(1).build()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onInlineSuggestionsResponse(response: InlineSuggestionsResponse): Boolean {
+        if (!inlineAutofillSupported) return false
+        // Nunca lê nem guarda o conteúdo (senha/e-mail): só mantém a referência para aplicar o toque
+        pendingAutofill = response.inlineSuggestions.firstOrNull()
+        if (::candidateView.isInitialized) {
+            candidateView.setAutofillPill(if (pendingAutofill != null) "Preencher automaticamente" else null)
+        }
+        return true
+    }
+
+    private fun clearAutofill() {
+        pendingAutofill = null
+        if (::candidateView.isInitialized) candidateView.setAutofillPill(null)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun fillWithAutofill() {
+        if (!inlineAutofillSupported) return
+        val s = pendingAutofill ?: return
+        val d = resources.displayMetrics.density
+        s.inflate(this, Size((151 * d).toInt(), (34 * d).toInt()), mainExecutor) { view ->
+            // A sugestão do próprio sistema aplica o preenchimento ao receber o clique
+            view.performClick()
+            clearAutofill()
+        }
+    }
+
     private fun updateCandidates() {
         if (!::candidateView.isInitialized) return
         val prefix = composingWord.toString()
@@ -549,6 +602,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         super.onFinishInputView(finishingInput)
         commitComposingText()
         lastAutoCorrection = null
+        clearAutofill()
         // Teclado escondido: cancela a gravação para o microfone não continuar aberto
         if (voiceHelper?.isRecording == true) {
             mainHandler.removeCallbacks(amplitudeRunnable)
