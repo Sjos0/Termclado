@@ -71,6 +71,15 @@ class CandidateView @JvmOverloads constructor(
     private var composing = false
     private var screenshotLabel: String? = null
     private var screenshotThumb: Bitmap? = null
+    // #44: rótulo da sugestão de autopreenchimento (null = nenhuma)
+    private var autofillLabel: String? = null
+    var onAutofillClick: (() -> Unit)? = null
+
+    fun setAutofillPill(label: String?) {
+        autofillLabel = label
+        calculateLayout()
+        invalidate()
+    }
 
     private var toolActions: MutableList<ToolbarAction> = mutableListOf(
         ToolbarAction.CURSOR, ToolbarAction.CLIPBOARD, ToolbarAction.TRANSLATE, ToolbarAction.SETTINGS
@@ -249,7 +258,7 @@ class CandidateView @JvmOverloads constructor(
             return
         }
 
-        if (!composing && screenshotLabel != null) {
+        if (!composing && (autofillLabel != null || screenshotLabel != null)) {
             val pw = pillWidthDp * d
             val ph = pillHeightDp * d
             pillRect.set(w / 2f - pw / 2f, h / 2f - ph / 2f, w / 2f + pw / 2f, h / 2f + ph / 2f)
@@ -332,7 +341,7 @@ class CandidateView @JvmOverloads constructor(
         val thumbSize = 22f * d
         val thumbLeft = r.left + 4f * d
         val thumbTop = r.centerY() - thumbSize / 2f
-        val thumb = screenshotThumb
+        val thumb = if (autofillLabel == null) screenshotThumb else null
         if (thumb != null) {
             thumbPath.reset()
             thumbPath.addRoundRect(
@@ -344,7 +353,7 @@ class CandidateView @JvmOverloads constructor(
             canvas.drawBitmap(thumb, null, RectF(thumbLeft, thumbTop, thumbLeft + thumbSize, thumbTop + thumbSize), null)
             canvas.restore()
         }
-        val label = screenshotLabel ?: return
+        val label = autofillLabel ?: screenshotLabel ?: return
         pillTextPaint.textSize = 14f * resources.displayMetrics.scaledDensity
         val textLeft = thumbLeft + thumbSize + 6f * d
         val maxW = (r.right - 8f * d) - textLeft
@@ -412,7 +421,9 @@ class CandidateView @JvmOverloads constructor(
                 when (pressedHit) {
                     Hit.GRID -> if (fired) setToolsOpen(!toolsOpen)
                     Hit.MIC -> if (fired) onToolbarActionClickListener?.invoke(ToolbarAction.MIC)
-                    Hit.PILL -> if (fired) onScreenshotClick?.invoke()
+                    Hit.PILL -> if (fired) {
+                        if (autofillLabel != null) onAutofillClick?.invoke() else onScreenshotClick?.invoke()
+                    }
                     Hit.SUGGESTION -> if (fired) suggestions.getOrNull(pressedIndex)?.let { onSuggestionClickListener?.invoke(it) }
                     Hit.TOOL -> if (fired && dragFromIndex >= 0 && elapsed() < LONG_PRESS_MS) {
                         onToolbarActionClickListener?.invoke(toolActions[pressedIndex])

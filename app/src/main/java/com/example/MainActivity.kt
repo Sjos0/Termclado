@@ -139,6 +139,12 @@ class MainActivity : Activity() {
         ) { showDictionaryDialog() })
 
         listContainer.addView(createSettingsItem(
+            iconRes = R.drawable.ic_settings_dictionary,
+            title = "Apagar aprendizado pessoal",
+            subtitle = "Palavras aprendidas e previsões deste aparelho"
+        ) { confirmClearLearning() })
+
+        listContainer.addView(createSettingsItem(
             iconRes = R.drawable.ic_settings_voice,
             title = "Digitação por voz",
             subtitle = if (prefs.groqApiKey.isNotBlank()) "Groq Whisper configurado" else "Configure a chave da API Groq"
@@ -398,6 +404,18 @@ class MainActivity : Activity() {
             .setTitle("Dicionário Offline")
             .setMessage("Dicionário de Alta Eficiência PT-BR\n\n• 100% offline e armazenado localmente no aplicativo.\n• Formato binário ultra-compacto indexado por buckets O(1).\n• Baseado no vocabulário oficial pt-BR do Projeto Vero (LGPLv3/MPL).\n• Carregamento instantâneo via Rust nativo / Kotlin puro.")
             .setPositiveButton("OK", null)
+            .show()
+    }
+
+    private fun confirmClearLearning() {
+        AlertDialog.Builder(this)
+            .setTitle("Apagar aprendizado pessoal")
+            .setMessage("Remove as palavras que você ensinou ao teclado e as previsões pessoais deste aparelho. Não dá para desfazer.")
+            .setPositiveButton("Apagar") { _, _ ->
+                com.example.keyboard.LearningStore.clearAll(this)
+                Toast.makeText(this, "Aprendizado apagado", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancelar", null)
             .show()
     }
 
