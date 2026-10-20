@@ -75,6 +75,9 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
     private lateinit var candidateView: CandidateView
 
     private val composingWord = StringBuilder()
+    // Seleção atual informada pelo editor (-1 = desconhecida), para o backspace apagar o intervalo
+    private var selStart = -1
+    private var selEnd = -1
     private var previousWord: String = ""
     private var lastAutoCorrection: AutoCorrectionRecord? = null
 
@@ -183,6 +186,8 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         attribute?.contentMimeTypes = arrayOf("image/png", "image/jpeg", "image/gif", "image/webp")
         composingWord.setLength(0)
         previousWord = ""
+        selStart = -1
+        selEnd = -1
         lastAutoCorrection = null
         // Campo novo: a barra mostra as previsões iniciais, sem resto da palavra anterior
         updateCandidates()
@@ -197,6 +202,8 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         candidatesEnd: Int,
     ) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
+        selStart = newSelStart
+        selEnd = newSelEnd
         if (composingWord.isEmpty()) return
         val ic = currentInputConnection ?: return
         val before = ic.getTextBeforeCursor(composingWord.length, 0)?.toString().orEmpty()
@@ -353,6 +360,15 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
             return
         }
 
+        // Seleção ativa: o backspace apaga o intervalo inteiro e deixa o cursor no início dele
+        if (selStart >= 0 && selEnd > selStart) {
+            composingWord.setLength(0)
+            ic.commitText("", 1)
+            selEnd = selStart
+            updateCandidates()
+            return
+        }
+
         if (composingWord.isNotEmpty()) {
             composingWord.deleteCharAt(composingWord.length - 1)
             if (composingWord.isNotEmpty()) {
@@ -366,10 +382,10 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         } else {
             // Só InputConnection — NUNCA KEYCODE_DEL: em vários apps o DEL com campo
             // vazio (ou o último caractere) faz o sistema fechar o teclado.
-            val before = ic.getTextBeforeCursor(1, 0)
-            if (!before.isNullOrEmpty()) {
-                ic.deleteSurroundingText(1, 0)
-            }
+            // Apaga o último caractere visível inteiro (emoji = 2 code units; ZWJ/modificadores juntos)
+            val before = ic.getTextBeforeCursor(32, 0)?.toString().orEmpty()
+            val n = Graphemes.lastClusterLength(before)
+            if (n > 0) ic.deleteSurroundingText(n, 0)
             // Se já está vazio, não faz nada e mantém o IME visível.
         }
 
