@@ -75,6 +75,8 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
     private lateinit var candidateView: CandidateView
 
     private val composingWord = StringBuilder()
+    private val userDict get() = LearningStore.dictionary(this)
+    private val personalBigrams get() = LearningStore.bigrams(this)
     // Seleção atual informada pelo editor (-1 = desconhecida), para o backspace apagar o intervalo
     private var selStart = -1
     private var selEnd = -1
@@ -330,6 +332,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
             }
 
             ic.commitText("$wordToCommit ", 1)
+            recordBigram(previousWord, wordToCommit)
             previousWord = wordToCommit
             composingWord.setLength(0)
         } else {
@@ -429,6 +432,8 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         val ic = currentInputConnection ?: return
         lastAutoCorrection = null
         ic.commitText("$chosen ", 1)
+        learnChosen(chosen)
+        recordBigram(previousWord, chosen)
         previousWord = chosen
         composingWord.setLength(0)
 
@@ -484,16 +489,60 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         if (!::candidateView.isInitialized) return
         val prefix = composingWord.toString()
         if (prefix.isNotEmpty()) {
+            // Palavra desconhecida digitada aparece primeiro (#43); depois aprendidas, depois o motor (com peso pessoal)
+            val native = rankWithPersonal(NativeEngine.getSuggestions(previousWord, prefix), prefix)
+            val learned = userDict.suggestionsFor(prefix, 2)
+            val unknownTyped = if (prefix.length >= 2 && !NativeEngine.isWord(prefix) &&
+                !userDict.contains(prefix) && !isSensitiveField()) prefix else null
+            val text = buildList {
+                unknownTyped?.let { add(it) }
+                for (w in learned) if (w !in this && w !in native) add(w)
+                for (w in native) if (w !in this) add(w)
+            }.take(3)
             // Como o Gboard: até 2 palavras + até 2 emojis quando a palavra tem emoji correspondente
-            val words = NativeEngine.getSuggestions(previousWord, prefix)
             val emojis = EmojiSuggestions.forWord(prefix).take(2)
-            val list = if (emojis.isEmpty()) words.take(3) else words.take(2) + emojis
+            val list = if (emojis.isEmpty()) text.take(3) else text.take(2) + emojis
             candidateView.setSuggestions(list, composing = true)
         } else {
-            // Sem palavra em digitação: previsões da próxima palavra (bigramas) e, se houver,
-            // a pílula de captura de tela. A barra não muda de layout.
-            candidateView.setSuggestions(NativeEngine.getSuggestions(previousWord, ""), composing = false)
+            // Previsão da próxima palavra: as mais usadas pelo usuário primeiro (#45), completadas pelo motor
+            val personal = personalBigrams.topNext(previousWord, 3)
+            val native = NativeEngine.getSuggestions(previousWord, "")
+            candidateView.setSuggestions((personal + native).distinct().take(3), composing = false)
         }
+    }
+
+    /** Reordena o ranking nativo com o peso pessoal, em Kotlin (o Rust não muda). */
+    private fun rankWithPersonal(native: List<String>, prefix: String): List<String> {
+        val scored = native.mapIndexed { i, w ->
+            w to ((native.size - i) * 10_000 + personalBigrams.boost(previousWord, w))
+        }.sortedByDescending { it.second }.map { it.first }
+        val extras = personalBigrams.topNext(previousWord, 5)
+            .filter { it.startsWith(prefix, ignoreCase = true) && it !in scored }
+        return (scored + extras).distinct()
+    }
+
+    /** Campo de senha ou e-mail: nada é aprendido nem registrado (REQ-LRN-006 / REQ-AI-006). */
+    private fun isSensitiveField(): Boolean {
+        val info = currentInputEditorInfo ?: return false
+        if (info.inputType and InputType.TYPE_MASK_CLASS != InputType.TYPE_CLASS_TEXT) return false
+        return when (info.inputType and InputType.TYPE_MASK_VARIATION) {
+            InputType.TYPE_TEXT_VARIATION_PASSWORD,
+            InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+            InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
+            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+            InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS -> true
+            else -> false
+        }
+    }
+
+    private fun recordBigram(prev: String, next: String) {
+        if (prev.isBlank() || next.isBlank() || !next.all { it.isLetter() } || isSensitiveField()) return
+        personalBigrams.record(prev.trim(), next.trim())
+    }
+
+    /** Só aprende no toque explícito do usuário numa sugestão de palavra (REQ-LRN-003). */
+    private fun learnChosen(chosen: String) {
+        if (chosen.isNotEmpty() && chosen.all { it.isLetter() } && !isSensitiveField()) userDict.learn(chosen)
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
