@@ -2,7 +2,7 @@
 
 Teclado Android (IME) para português brasileiro, leve e feito para celulares com pouca memória. Requer **Android 8.0 (API 26)** ou superior.
 
-Versão atual: **1.9.3** (versionCode 13). Pacote: `com.aistudio.tecladoptbr.kxqpva`. Até a v1.9.1 o app se chamava "Teclado Leve PT-BR".
+Versão atual: a última release publicada no GitHub (o número fica em `app/build.gradle.kts`). Pacote: `com.aistudio.tecladoptbr.kxqpva`. Até a v1.9.1 o app se chamava "Teclado Leve PT-BR".
 
 ---
 

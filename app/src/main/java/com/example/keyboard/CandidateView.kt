@@ -306,8 +306,15 @@ class CandidateView @JvmOverloads constructor(
             if (pressedHit == Hit.SUGGESTION && pressedIndex == i) {
                 canvas.drawRoundRect(RectF(r.left + 4f * d, 3f * d, r.right - 4f * d, h - 3f * d), 15f * d, 15f * d, pressPaint)
             }
+            // Palavra longa: reduz a fonte só desta sugestão até caber no slot (sem cortar nem sobrepor)
+            val word = suggestions[i]
+            textPaint.textSize = TextFit.fitSize(16f * resources.displayMetrics.scaledDensity,
+                10f * resources.displayMetrics.scaledDensity, r.width() - 12f * d) { size ->
+                textPaint.textSize = size
+                textPaint.measureText(word)
+            }
             val y = r.centerY() - (textPaint.descent() + textPaint.ascent()) / 2f
-            canvas.drawText(suggestions[i], r.centerX(), y, textPaint)
+            canvas.drawText(word, r.centerX(), y, textPaint)
             if (i < suggestionRects.size - 1) {
                 val x = r.right
                 val half = dividerHeightDp * d / 2f
