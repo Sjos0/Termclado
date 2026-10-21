@@ -276,7 +276,11 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
             else -> false
         }
 
-        keyboardView.shiftState = if (shouldCapitalize) KeyboardView.SHIFT_ON else KeyboardView.SHIFT_OFF
+        keyboardView.shiftState = when {
+            !shouldCapitalize -> KeyboardView.SHIFT_OFF
+            textBefore.isEmpty() -> KeyboardView.SHIFT_LOCKED // campo vazio: abre tudo em maiúsculas, ativado
+            else -> KeyboardView.SHIFT_ON
+        }
     }
 
     override fun onKey(code: Int, text: String?) {
@@ -473,16 +477,21 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         val shot = currentShot ?: return
         val ic = currentInputConnection ?: return
         val info = currentInputEditorInfo ?: return
-        val mimes = info.contentMimeTypes
-        if (mimes == null || mimes.none { it.startsWith("image/") }) {
-            Toast.makeText(this, "Este app não aceita imagens aqui", Toast.LENGTH_SHORT).show()
-            return
-        }
+        // Declara os tipos de imagem no EditorInfo deste campo (sem isso o app não recebe imagens)
+        androidx.core.view.inputmethod.EditorInfoCompat.setContentMimeTypes(
+            info, arrayOf("image/png", "image/jpeg", "image/gif", "image/webp"))
         val content = InputContentInfoCompat(shot.uri, ClipDescription("Captura de tela", arrayOf("image/png")), null)
         val ok = InputConnectionCompat.commitContent(
             ic, info, content, InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION, null
         )
-        if (!ok) Toast.makeText(this, "Este app não aceitou a imagem", Toast.LENGTH_SHORT).show()
+        android.util.Log.i("ScreenshotPill", "commitContent=$ok uri=${shot.uri}")
+        if (ok) return
+        // Fallback: copia a imagem para a área de transferência e tenta colar no campo
+        val cm = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        cm.setPrimaryClip(android.content.ClipData.newUri(contentResolver, "Captura de tela", shot.uri))
+        val pasted = ic.performContextMenuAction(android.R.id.paste)
+        android.util.Log.i("ScreenshotPill", "fallback paste=$pasted")
+        if (!pasted) Toast.makeText(this, "Imagem copiada: cole no campo", Toast.LENGTH_SHORT).show()
     }
 
     private fun commitComposingText() {

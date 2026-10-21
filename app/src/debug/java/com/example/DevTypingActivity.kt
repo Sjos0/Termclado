@@ -14,7 +14,7 @@ import android.widget.EditText
 class DevTypingActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val edit = EditText(this).apply {
+        val edit = ImageEditText(this).apply {
             hint = "campo de teste"
             setPadding(40, 160, 40, 40)
         }
