@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Shift desligado: seta de contorno (traço de 1,5 dp), desenhada à mão, ajustada ao Gboard atual. -->
+<!-- Shift desligado: seta de contorno (traço de 1,75 dp), desenhada à mão, ajustada ao Gboard atual. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="#00000000" android:strokeColor="#FF000000" android:strokeWidth="1.5"
+    <path android:fillColor="#00000000" android:strokeColor="#FF000000" android:strokeWidth="1.75"
         android:strokeLineJoin="miter" android:strokeLineCap="butt"
-        android:pathData="M12,3.75L23,13.5L17.25,13.5L17.25,20.25L6.75,20.25L6.75,13.5L1,13.5Z"/>
+        android:pathData="M12,3.5L22,13L16.5,13L16.5,20.5L7.5,20.5L7.5,13L2,13Z"/>
 </vector>
