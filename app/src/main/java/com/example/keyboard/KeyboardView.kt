@@ -512,7 +512,7 @@ class KeyboardView @JvmOverloads constructor(
 
                     // Letras e dígitos: 52% da altura da tecla, reduzidos só se a largura passar de 74% da tecla
                     fontPaint.textSize = if (key.label.length > 2) key.rect.height() * 0.32f else
-                        TextFit.fitSize(key.rect.height() * (if (key.label.firstOrNull()?.isDigit() == true) 0.62f else 0.72f),
+                        TextFit.fitSize(key.rect.height() * (if (key.label.firstOrNull()?.isDigit() == true) 0.53f else 0.62f),
                             key.rect.height() * 0.36f, key.rect.width() * 0.6f) { size ->
                             fontPaint.textSize = size
                             fontPaint.measureText(key.label)

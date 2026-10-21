@@ -107,7 +107,7 @@ sleep 1.5
 shot 05-digitando-teclado
 # Shift: estado antes e depois de tocar (maiúsculas/contorno <-> minúsculas/preenchido)
 geo "$OUT/05-digitando-teclado.png"
-SH=$(python3 -c "import json;g=json.load(open('$OUT/geo.json'));t=g['teclas_por_linha'][2][0]
+SH=$(python3 -c "import json;g=json.load(open('$OUT/geo.json'));t=g["teclas_por_linha"][3][0]
 print(t['x0']+t['largura']//2, g['teclado_topo']+t['topo']+t['altura']//2)" 2>/dev/null)
 shot 05b-shift-antes
 [ -n "$SH" ] && adb shell input tap $SH && sleep 1 && shot 05c-shift-depois
