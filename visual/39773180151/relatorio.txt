@@ -1,0 +1,22 @@
+Tela original: Physical size: 1080x2400 | Physical density: 420
+Tela usada:    Override size: 720x1520 | Override density: 288
+Instalação: Success
+Teclado ativo: mCurMethodId=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService
+Teclado ainda não visível (tentativa 1)
+Teclado ainda não visível (tentativa 2)
+Teclado ainda não visível (tentativa 3)
+Teclado ainda não visível (tentativa 4)
+Teclado ainda não visível (tentativa 5)
+Teclado ainda não visível (tentativa 6)
+Teclado visível: mInputShown=true
+Topo do teclado: 923 px; linha dos ícones da barra: y=961
+TESTE toque indevido na barra: OK (continua em com.aistudio.tecladoptbr.kxqpva/com.example.DevTypingActivity)
+TESTE imagem da pílula: OK (o campo recebeu a imagem)
+Diagnóstico terminal: foco=mCurrentFocus=Window{9b0ce27 | erros=11
+  10-22 11:51:42.116   830   861 V WindowManagerShell: Transition doesn't have explicit remote, search filters for match for {id=22 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{null m=OPEN f=FILLS_TASK leas
+  10-22 11:51:42.117   830   861 V WindowManagerShell: start default transition animation, info = {id=22 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{null m=OPEN f=FILLS_TASK leash=Surface(name=ActivityReco
+  10-22 11:51:42.124  4836  4836 W InputMethodManager: Ignoring showSoftInput() as view=com.example.DevTerminalActivity$FakeTerminal{4b5ceb VFED..CL. .F....ID 0,0-720,1396 aid=1073741824} is not served.
+  10-22 11:51:42.134   518   883 D ContentCapturePerUserService: Notified activity assist data for activity: Token{7810b41 ActivityRecord{7aec228 u0 com.aistudio.tecladoptbr.kxqpva/com.example.DevTermin
+TESTE terminal, digitar: FALHOU (veio: )
+TESTE terminal, backspace: FALHOU (veio: )
+Concluído. Imagens em visual-results/
