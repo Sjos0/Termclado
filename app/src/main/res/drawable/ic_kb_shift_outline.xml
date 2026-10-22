@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Shift desligado: seta de contorno. Desenhado à mão, medido nas capturas do Gboard (1,8 px/dp). Cor aplicada em tempo de execução. -->
+<!-- Shift desligado: seta de contorno (mesma caixa). Desenhado à mão; caixa comum de 20 x 18 dp para os três estados. Cor aplicada em tempo de execução. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24">
     <path android:fillColor="#FF000000" android:fillType="evenOdd"
-        android:pathData="M2.5,13.75L8.0,13.75L8.0,20.25L16.0,20.25L16.0,13.75L21.5,13.75L12.0,3.75L2.5,13.75ZM16.84,11.75L14.0,11.75L14.0,18.25L10.0,18.25L10.0,11.75L7.16,11.75L12.0,6.65L16.84,11.75Z"/>
+        android:pathData="M2.0,13.0L7.0,13.0L7.0,21.0L17.0,21.0L17.0,13.0L22.0,13.0L12.0,3.0L2.0,13.0ZM17.17,11.0L15.0,11.0L15.0,19.0L9.0,19.0L9.0,11.0L6.83,11.0L12.0,5.83L17.17,11.0Z"/>
 </vector>

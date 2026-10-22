@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Caps lock travado: seta preenchida com barra. Desenhado à mão, medido nas capturas do Gboard (1,8 px/dp). Cor aplicada em tempo de execução. -->
+<!-- Caps lock: seta preenchida com barra (mesma caixa). Desenhado à mão; caixa comum de 20 x 18 dp para os três estados. Cor aplicada em tempo de execução. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24">
     <path android:fillColor="#FF000000"
-        android:pathData="M2.0,13.0L7.0,13.0L7.0,21.0L17.0,21.0L17.0,13.0L22.0,13.0L12.0,3.0L2.0,13.0ZM7.0,21.9L7.0,23.7L17.0,23.7L17.0,21.9L7.0,21.9Z"/>
+        android:pathData="M2.0,13.0L7.0,13.0L7.0,18.6L17.0,18.6L17.0,13.0L22.0,13.0L12.0,3.0L2.0,13.0ZM7.0,19.2L7.0,21.0L17.0,21.0L17.0,19.2L7.0,19.2Z"/>
 </vector>
