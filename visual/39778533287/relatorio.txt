@@ -1,0 +1,22 @@
+Tela original: Physical size: 1080x2400 | Physical density: 420
+Tela usada:    Override size: 720x1520 | Override density: 288
+Instalação: Success
+Teclado ativo: mCurMethodId=com.aistudio.tecladoptbr.kxqpva/com.example.keyboard.LatinIMEKeyboardService
+Teclado ainda não visível (tentativa 1)
+Teclado ainda não visível (tentativa 2)
+Teclado ainda não visível (tentativa 3)
+Teclado ainda não visível (tentativa 4)
+Teclado ainda não visível (tentativa 5)
+Teclado ainda não visível (tentativa 6)
+Teclado visível: mInputShown=true
+Topo do teclado: 923 px; linha dos ícones da barra: y=961
+TESTE toque indevido na barra: OK (continua em com.aistudio.tecladoptbr.kxqpva/com.example.DevTypingActivity)
+TESTE imagem da pílula: OK (o campo recebeu a imagem)
+Diagnóstico terminal: foco=mCurrentFocus=Window{6430d3 | erros=12
+  10-22 12:33:08.070   524  2340 D CoreBackPreview: Window{f181e53 u0 com.aistudio.tecladoptbr.kxqpva/com.example.DevTerminalActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.
+  10-22 12:33:16.154  4790  4790 I TermTest: text=o
+  10-22 12:33:16.573  4790  4790 I TermTest: text=ol
+  10-22 12:33:16.981  4790  4790 I TermTest: text=ola
+TESTE terminal, digitar: OK (ola apareceu na hora)
+TESTE terminal, backspace: OK (apagou a ultima letra)
+Concluído. Imagens em visual-results/
