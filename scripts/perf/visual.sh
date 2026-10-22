@@ -157,6 +157,8 @@ sleep 8
 shot 08-terminal
 geo "$OUT/08-terminal.png"
 tocar 2 8; tocar 3 8; tocar 3 0; sleep 1
+log "Diagnóstico terminal: foco=$(adb shell dumpsys window 2>/dev/null | tr -d '\r' | grep -o 'mCurrentFocus=[^ ]*' | head -1) | erros=$(adb logcat -d 2>/dev/null | grep -c 'FATAL EXCEPTION\|DevTerminal')"
+adb logcat -d 2>/dev/null | tr -d '\r' | grep -E "FATAL EXCEPTION|DevTerminal|TermTest" | tail -4 | while read -r l; do log "  ${l:0:200}"; done
 ultimo() { adb logcat -d -s TermTest:I 2>/dev/null | tr -d '\r' | grep -o 'text=.*' | tail -1; }
 [ "$(ultimo)" = "text=ola" ] && log "TESTE terminal, digitar: OK (ola apareceu na hora)" || log "TESTE terminal, digitar: FALHOU (veio: $(ultimo))"
 BK=$(python3 -c "
