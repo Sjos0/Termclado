@@ -107,7 +107,7 @@ sleep 1.5
 shot 05-digitando-teclado
 # Shift: estado antes e depois de tocar (maiúsculas/contorno <-> minúsculas/preenchido)
 geo "$OUT/05-digitando-teclado.png"
-SH=$(python3 -c "import json;g=json.load(open('$OUT/geo.json'));t=g["teclas_por_linha"][3][0]
+SH=$(python3 -c "import json;g=json.load(open('$OUT/geo.json'));t=g['teclas_por_linha'][3][0]
 print(t['x0']+t['largura']//2, g['teclado_topo']+t['topo']+t['altura']//2)" 2>/dev/null)
 shot 05b-shift-antes
 [ -n "$SH" ] && adb shell input tap $SH && sleep 1 && shot 05c-shift-depois
@@ -149,5 +149,20 @@ else
   log "TESTE imagem da pílula: pílula não encontrada na captura"
 fi
 
+# --- Teste do terminal (Termux): a letra aparece na hora e o backspace apaga ---
+adb shell input keyevent KEYCODE_BACK; sleep 1
+adb logcat -c 2>/dev/null || true
+adb shell am start -W -n "$PKG/com.example.DevTerminalActivity" >/dev/null 2>&1 || true
+sleep 8
+shot 08-terminal
+geo "$OUT/08-terminal.png"
+tocar 2 8; tocar 3 8; tocar 3 0; sleep 1
+ultimo() { adb logcat -d -s TermTest:I 2>/dev/null | tr -d '\r' | grep -o 'text=.*' | tail -1; }
+[ "$(ultimo)" = "text=ola" ] && log "TESTE terminal, digitar: OK (ola apareceu na hora)" || log "TESTE terminal, digitar: FALHOU (veio: $(ultimo))"
+BK=$(python3 -c "
+import json; g=json.load(open('$OUT/geo.json')); t=g['teclas_por_linha'][3][-1]
+print(t['x0']+t['largura']//2, g['teclado_topo']+t['topo']+t['altura']//2)")
+adb shell input tap $BK; sleep 1
+[ "$(ultimo)" = "text=ol" ] && log "TESTE terminal, backspace: OK (apagou a ultima letra)" || log "TESTE terminal, backspace: FALHOU (veio: $(ultimo))"
 log "Concluído. Imagens em $OUT/"
 exit 0

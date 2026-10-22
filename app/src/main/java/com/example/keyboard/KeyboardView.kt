@@ -499,7 +499,7 @@ class KeyboardView @JvmOverloads constructor(
 
             // Renderização do conteúdo de cada tecla
             when (key.code) {
-                CODE_SHIFT -> drawKeyIcon(canvas, key.rect, if (shiftState == SHIFT_OFF) iconShiftOutline else iconShift, shiftIconColor())
+                CODE_SHIFT -> drawKeyIcon(canvas, key.rect, when (shiftState) { SHIFT_LOCKED -> iconShiftLock; SHIFT_ON -> iconShift; else -> iconShiftOutline }, shiftIconColor())
                 CODE_BACKSPACE -> drawKeyIcon(canvas, key.rect, iconBackspace, Color.parseColor("#D9DBDC"))
                 CODE_ENTER -> drawKeyIcon(canvas, key.rect, iconReturn, Color.WHITE)
                 CODE_EMOJI -> drawKeyIcon(canvas, key.rect, iconEmoji, Color.parseColor("#D9DBDC"))
@@ -533,6 +533,7 @@ class KeyboardView @JvmOverloads constructor(
     // Ícones originais do Material Icons (ver res/drawable/ic_kb_*)
     private val iconShift: Drawable? = loadIcon(R.drawable.ic_kb_shift)
     private val iconShiftOutline: Drawable? = loadIcon(R.drawable.ic_kb_shift_outline)
+    private val iconShiftLock: Drawable? = loadIcon(R.drawable.ic_kb_shift_lock)
     private val iconBackspace: Drawable? = loadIcon(R.drawable.ic_kb_backspace)
     private val iconReturn: Drawable? = loadIcon(R.drawable.ic_kb_return)
     private val iconEmoji: Drawable? = loadIcon(R.drawable.ic_kb_emoji)
@@ -542,11 +543,7 @@ class KeyboardView @JvmOverloads constructor(
         return raw.mutate()
     }
 
-    private fun shiftIconColor(): Int = when (shiftState) {
-        SHIFT_LOCKED -> Color.WHITE
-        SHIFT_ON -> Color.WHITE
-        else -> Color.parseColor("#9DB1BC")
-    }
+    private fun shiftIconColor(): Int = Color.parseColor("#C2C5C7") // mesma cor nos 3 estados, medida no Gboard
 
     /** Desenha um ícone do Material centralizado na tecla, com a cor do estado atual. */
     private fun drawKeyIcon(canvas: Canvas, rect: RectF, icon: Drawable?, color: Int) {

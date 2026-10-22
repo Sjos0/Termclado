@@ -261,6 +261,10 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
     }
 
     private fun checkAutoCapitalization(info: EditorInfo? = currentInputEditorInfo) {
+        if (isDirectInput()) {
+            if (keyboardView.shiftState == KeyboardView.SHIFT_ON) keyboardView.shiftState = KeyboardView.SHIFT_OFF
+            return
+        }
         if (!prefs.autoCapitalization || keyboardView.shiftState == KeyboardView.SHIFT_LOCKED) {
             return
         }
@@ -276,17 +280,25 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
             else -> false
         }
 
-        keyboardView.shiftState = when {
-            !shouldCapitalize -> KeyboardView.SHIFT_OFF
-            textBefore.isEmpty() -> KeyboardView.SHIFT_LOCKED // campo vazio: abre tudo em maiúsculas, ativado
-            else -> KeyboardView.SHIFT_ON
-        }
+        // Campo vazio abre com o shift ligado de UMA letra (seta preenchida), como no Gboard
+        keyboardView.shiftState = if (shouldCapitalize) KeyboardView.SHIFT_ON else KeyboardView.SHIFT_OFF
     }
 
     override fun onKey(code: Int, text: String?) {
         if (::candidateView.isInitialized) candidateView.setToolsOpen(false)
         val ic = currentInputConnection ?: return
         lastAutoCorrection = null // Qualquer digitação descarta a janela de desfazer autocorreção
+
+        // Terminal (Termux): sem composição; cada caractere vai direto e o backspace é a tecla DEL
+        if (isDirectInput()) {
+            if (code == KeyboardView.CODE_SPACE) {
+                ic.commitText(" ", 1)
+            } else if (text != null) {
+                ic.commitText(if (keyboardView.shiftState != KeyboardView.SHIFT_OFF) text.uppercase() else text.lowercase(), 1)
+                if (keyboardView.shiftState == KeyboardView.SHIFT_ON) keyboardView.shiftState = KeyboardView.SHIFT_OFF
+            }
+            return
+        }
 
         if (code == KeyboardView.CODE_SPACE) {
             handleSpace()
@@ -361,6 +373,11 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
 
     override fun onBackspace() {
         val ic = currentInputConnection ?: return
+        if (isDirectInput()) {
+            composingWord.setLength(0)
+            sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
+            return
+        }
 
         // REQUISITO: "Backspace logo após uma correção desfaz essa correção."
         if (lastAutoCorrection != null) {
@@ -431,6 +448,10 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
     override fun onActionKey() {
         val ic = currentInputConnection ?: return
         commitComposingText()
+        if (isDirectInput()) {
+            sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+            return
+        }
 
         val info = currentInputEditorInfo
         val action = info?.imeOptions?.and(EditorInfo.IME_MASK_ACTION) ?: EditorInfo.IME_ACTION_NONE
@@ -549,6 +570,10 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
 
     private fun updateCandidates() {
         if (!::candidateView.isInitialized) return
+        if (isDirectInput()) {
+            candidateView.setSuggestions(emptyList(), composing = false)
+            return
+        }
         val prefix = composingWord.toString()
         if (prefix.isNotEmpty()) {
             // Palavra desconhecida digitada aparece primeiro (#43); depois aprendidas, depois o motor (com peso pessoal)
@@ -581,6 +606,13 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         val extras = personalBigrams.topNext(previousWord, 5)
             .filter { it.startsWith(prefix, ignoreCase = true) && it !in scored }
         return (scored + extras).distinct()
+    }
+
+    /** Terminal (Termux e similares): campo sem tipo de texto. Não há composição nem apagamento por texto. */
+    private fun isDirectInput(): Boolean {
+        val info = currentInputEditorInfo ?: return false
+        return (info.inputType and InputType.TYPE_MASK_CLASS) == InputType.TYPE_NULL ||
+            info.packageName?.startsWith("com.termux") == true
     }
 
     /** Campo de senha ou e-mail: nada é aprendido nem registrado (REQ-LRN-006 / REQ-AI-006). */

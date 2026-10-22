@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Shift desligado: seta de contorno (traço de 1,75 dp), desenhada à mão, ajustada ao Gboard atual. -->
+<!-- Shift desligado: seta de contorno. Desenhado à mão (proporções medidas no Gboard atual). Cor aplicada em tempo de execução. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="#00000000" android:strokeColor="#FF000000" android:strokeWidth="1.75"
-        android:strokeLineJoin="miter" android:strokeLineCap="butt"
-        android:pathData="M12,3.5L22,13L16.5,13L16.5,20.5L7.5,20.5L7.5,13L2,13Z"/>
+    <path android:fillColor="#FF000000" android:fillType="evenOdd"
+        android:pathData="M12.28,2.52L12.24,2.49L12.21,2.47L12.17,2.45L12.13,2.44L12.09,2.43L12.04,2.42L12.0,2.42L11.96,2.42L11.91,2.43L11.87,2.44L11.83,2.45L11.79,2.47L11.76,2.49L11.72,2.52L11.69,2.55L2.31,11.47L2.28,11.51L2.26,11.54L2.23,11.58L2.21,11.62L2.2,11.66L2.19,11.7L2.18,11.75L2.18,11.79L2.18,11.84L2.18,11.88L2.19,11.92L2.21,11.97L2.23,12.01L2.25,12.05L2.27,12.08L2.3,12.12L2.34,12.15L2.37,12.17L2.41,12.2L2.45,12.22L2.49,12.23L2.54,12.24L2.58,12.25L2.62,12.25L6.0,12.25L6.0,21.3L6.0,21.34L6.01,21.39L6.02,21.43L6.03,21.47L6.05,21.51L6.08,21.55L6.1,21.59L6.13,21.62L6.16,21.65L6.2,21.67L6.24,21.7L6.28,21.72L6.32,21.73L6.36,21.74L6.41,21.75L6.45,21.75L17.55,21.75L17.59,21.75L17.64,21.74L17.68,21.73L17.72,21.72L17.76,21.7L17.8,21.67L17.84,21.65L17.87,21.62L17.9,21.59L17.92,21.55L17.95,21.51L17.97,21.47L17.98,21.43L17.99,21.39L18.0,21.34L18.0,21.3L18.0,12.25L21.38,12.25L21.42,12.25L21.46,12.24L21.51,12.23L21.55,12.22L21.59,12.2L21.63,12.17L21.66,12.15L21.7,12.12L21.73,12.08L21.75,12.05L21.77,12.01L21.79,11.97L21.81,11.92L21.82,11.88L21.82,11.84L21.82,11.79L21.82,11.75L21.81,11.7L21.8,11.66L21.79,11.62L21.77,11.58L21.74,11.54L21.72,11.51L21.69,11.47L12.31,2.55L12.28,2.52ZM12.0,5.01L17.5,10.25L16.0,10.25L16.0,19.75L8.0,19.75L8.0,10.25L6.5,10.25L12.0,5.01Z"/>
 </vector>
