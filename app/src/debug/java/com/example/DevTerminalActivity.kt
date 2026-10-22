@@ -14,15 +14,15 @@ import android.view.inputmethod.InputMethodManager
 
 /** Só depuração: imita o campo do Termux (TYPE_NULL, sem composição, sem apagar por texto). */
 class DevTerminalActivity : Activity() {
-    private class FakeTerminal(ctx: Context) : View(ctx) {
+    private class FakeTerminal(ctx: Context) : android.widget.EditText(ctx) {
         val buffer = StringBuilder()
-        init { isFocusable = true; isFocusableInTouchMode = true }
+        init { inputType = InputType.TYPE_NULL; isFocusable = true; isFocusableInTouchMode = true }
         override fun onCheckIsTextEditor() = true
         private fun log() = Log.i("TermTest", "text=$buffer")
         override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnection {
             outAttrs.inputType = InputType.TYPE_NULL
             outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_FULLSCREEN
-            return object : BaseInputConnection(this, false) {
+            return object : BaseInputConnection(this, true) {
                 override fun commitText(text: CharSequence?, newCursorPosition: Int): Boolean { buffer.append(text); log(); return true }
                 override fun setComposingText(text: CharSequence?, newCursorPosition: Int) = true   // o Termux não mostra composição
                 override fun getTextBeforeCursor(n: Int, flags: Int): CharSequence = ""
