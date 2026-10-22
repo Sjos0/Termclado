@@ -261,6 +261,10 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
     }
 
     private fun checkAutoCapitalization(info: EditorInfo? = currentInputEditorInfo) {
+        if (isDirectInput()) {
+            if (keyboardView.shiftState == KeyboardView.SHIFT_ON) keyboardView.shiftState = KeyboardView.SHIFT_OFF
+            return
+        }
         if (!prefs.autoCapitalization || keyboardView.shiftState == KeyboardView.SHIFT_LOCKED) {
             return
         }
@@ -276,6 +280,7 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
             else -> false
         }
 
+        // Campo vazio abre com o shift ligado de UMA letra (seta preenchida), como no Gboard
         keyboardView.shiftState = if (shouldCapitalize) KeyboardView.SHIFT_ON else KeyboardView.SHIFT_OFF
     }
 
@@ -283,6 +288,17 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         if (::candidateView.isInitialized) candidateView.setToolsOpen(false)
         val ic = currentInputConnection ?: return
         lastAutoCorrection = null // Qualquer digitação descarta a janela de desfazer autocorreção
+
+        // Terminal (Termux): sem composição; cada caractere vai direto e o backspace é a tecla DEL
+        if (isDirectInput()) {
+            if (code == KeyboardView.CODE_SPACE) {
+                ic.commitText(" ", 1)
+            } else if (text != null) {
+                ic.commitText(if (keyboardView.shiftState != KeyboardView.SHIFT_OFF) text.uppercase() else text.lowercase(), 1)
+                if (keyboardView.shiftState == KeyboardView.SHIFT_ON) keyboardView.shiftState = KeyboardView.SHIFT_OFF
+            }
+            return
+        }
 
         if (code == KeyboardView.CODE_SPACE) {
             handleSpace()
@@ -357,6 +373,11 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
 
     override fun onBackspace() {
         val ic = currentInputConnection ?: return
+        if (isDirectInput()) {
+            composingWord.setLength(0)
+            sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
+            return
+        }
 
         // REQUISITO: "Backspace logo após uma correção desfaz essa correção."
         if (lastAutoCorrection != null) {
@@ -427,6 +448,10 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
     override fun onActionKey() {
         val ic = currentInputConnection ?: return
         commitComposingText()
+        if (isDirectInput()) {
+            sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+            return
+        }
 
         val info = currentInputEditorInfo
         val action = info?.imeOptions?.and(EditorInfo.IME_MASK_ACTION) ?: EditorInfo.IME_ACTION_NONE
@@ -473,16 +498,21 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         val shot = currentShot ?: return
         val ic = currentInputConnection ?: return
         val info = currentInputEditorInfo ?: return
-        val mimes = info.contentMimeTypes
-        if (mimes == null || mimes.none { it.startsWith("image/") }) {
-            Toast.makeText(this, "Este app não aceita imagens aqui", Toast.LENGTH_SHORT).show()
-            return
-        }
+        // Declara os tipos de imagem no EditorInfo deste campo (sem isso o app não recebe imagens)
+        androidx.core.view.inputmethod.EditorInfoCompat.setContentMimeTypes(
+            info, arrayOf("image/png", "image/jpeg", "image/gif", "image/webp"))
         val content = InputContentInfoCompat(shot.uri, ClipDescription("Captura de tela", arrayOf("image/png")), null)
         val ok = InputConnectionCompat.commitContent(
             ic, info, content, InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION, null
         )
-        if (!ok) Toast.makeText(this, "Este app não aceitou a imagem", Toast.LENGTH_SHORT).show()
+        android.util.Log.i("ScreenshotPill", "commitContent=$ok uri=${shot.uri}")
+        if (ok) return
+        // Fallback: copia a imagem para a área de transferência e tenta colar no campo
+        val cm = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        cm.setPrimaryClip(android.content.ClipData.newUri(contentResolver, "Captura de tela", shot.uri))
+        val pasted = ic.performContextMenuAction(android.R.id.paste)
+        android.util.Log.i("ScreenshotPill", "fallback paste=$pasted")
+        if (!pasted) Toast.makeText(this, "Imagem copiada: cole no campo", Toast.LENGTH_SHORT).show()
     }
 
     private fun commitComposingText() {
@@ -540,6 +570,10 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
 
     private fun updateCandidates() {
         if (!::candidateView.isInitialized) return
+        if (isDirectInput()) {
+            candidateView.setSuggestions(emptyList(), composing = false)
+            return
+        }
         val prefix = composingWord.toString()
         if (prefix.isNotEmpty()) {
             // Palavra desconhecida digitada aparece primeiro (#43); depois aprendidas, depois o motor (com peso pessoal)
@@ -572,6 +606,13 @@ class LatinIMEKeyboardService : InputMethodService(), KeyboardView.OnKeyboardAct
         val extras = personalBigrams.topNext(previousWord, 5)
             .filter { it.startsWith(prefix, ignoreCase = true) && it !in scored }
         return (scored + extras).distinct()
+    }
+
+    /** Terminal (Termux e similares): campo sem tipo de texto. Não há composição nem apagamento por texto. */
+    private fun isDirectInput(): Boolean {
+        val info = currentInputEditorInfo ?: return false
+        return (info.inputType and InputType.TYPE_MASK_CLASS) == InputType.TYPE_NULL ||
+            info.packageName?.startsWith("com.termux") == true
     }
 
     /** Campo de senha ou e-mail: nada é aprendido nem registrado (REQ-LRN-006 / REQ-AI-006). */

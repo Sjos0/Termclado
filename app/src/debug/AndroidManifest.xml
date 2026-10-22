@@ -5,5 +5,8 @@
         <activity
             android:name=".DevTypingActivity"
             android:exported="true" />
+        <activity
+            android:name=".DevTerminalActivity"
+            android:exported="true" />
     </application>
 </manifest>

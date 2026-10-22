@@ -105,6 +105,12 @@ geo "$OUT/03-teclado-sugestoes.png"
 tocar 2 4; tocar 2 2; tocar 4 3; tocar 3 8; tocar 3 0; tocar 3 2; tocar 2 8
 sleep 1.5
 shot 05-digitando-teclado
+# Shift: estado antes e depois de tocar (maiúsculas/contorno <-> minúsculas/preenchido)
+geo "$OUT/05-digitando-teclado.png"
+SH=$(python3 -c "import json;g=json.load(open('$OUT/geo.json'));t=g['teclas_por_linha'][3][0]
+print(t['x0']+t['largura']//2, g['teclado_topo']+t['topo']+t['altura']//2)" 2>/dev/null)
+shot 05b-shift-antes
+[ -n "$SH" ] && adb shell input tap $SH && sleep 1 && shot 05c-shift-depois
 
 # Enter: a barra não deve repetir a palavra
 ENTER_XY=$(python3 -c "
@@ -126,5 +132,39 @@ adb shell ime set "$IME" >/dev/null 2>&1 || true
 sleep 2
 shot 07-teclado-pilula
 
+# --- Teste automático: tocar na pílula de captura deve enviar a imagem ao campo ---
+geo "$OUT/07-teclado-pilula.png"
+PIL=$(python3 -c "import json;g=json.load(open('$OUT/geo.json'));p=g.get('pilula')
+print('%d %d' % (p['x0']+p['largura']//2, g['teclado_topo']+p['y0']+p['altura']//2) if p else '')" 2>/dev/null)
+if [ -n "$PIL" ]; then
+  adb logcat -c 2>/dev/null || true
+  adb shell input tap $PIL; sleep 3
+  if adb logcat -d -s ImageTest:I 2>/dev/null | grep -q IMAGE_RECEIVED; then
+    log "TESTE imagem da pílula: OK (o campo recebeu a imagem)"
+  else
+    log "TESTE imagem da pílula: FALHOU (o campo não recebeu a imagem)"
+    adb logcat -d -s ScreenshotPill:I 2>/dev/null | tr -d '\r' | tail -4 | while read -r l; do log "  $l"; done
+  fi
+else
+  log "TESTE imagem da pílula: pílula não encontrada na captura"
+fi
+
+# --- Teste do terminal (Termux): a letra aparece na hora e o backspace apaga ---
+adb shell input keyevent KEYCODE_BACK; sleep 1
+adb logcat -c 2>/dev/null || true
+adb shell am start -W -n "$PKG/com.example.DevTerminalActivity" >/dev/null 2>&1 || true
+sleep 8
+shot 08-terminal
+geo "$OUT/08-terminal.png"
+tocar 2 8; tocar 3 8; tocar 3 0; sleep 1
+log "Diagnóstico terminal: foco=$(adb shell dumpsys window 2>/dev/null | tr -d '\r' | grep -o 'mCurrentFocus=[^ ]*' | head -1) | erros=$(adb logcat -d 2>/dev/null | grep -c 'FATAL EXCEPTION\|DevTerminal')"
+adb logcat -d 2>/dev/null | tr -d '\r' | grep -E "FATAL EXCEPTION|DevTerminal|TermTest" | tail -4 | while read -r l; do log "  ${l:0:200}"; done
+ultimo() { adb logcat -d -s TermTest:I 2>/dev/null | tr -d '\r' | grep -o 'text=.*' | tail -1; }
+[ "$(ultimo)" = "text=ola" ] && log "TESTE terminal, digitar: OK (ola apareceu na hora)" || log "TESTE terminal, digitar: FALHOU (veio: $(ultimo))"
+BK=$(python3 -c "
+import json; g=json.load(open('$OUT/geo.json')); t=g['teclas_por_linha'][3][-1]
+print(t['x0']+t['largura']//2, g['teclado_topo']+t['topo']+t['altura']//2)")
+adb shell input tap $BK; sleep 1
+[ "$(ultimo)" = "text=ol" ] && log "TESTE terminal, backspace: OK (apagou a ultima letra)" || log "TESTE terminal, backspace: FALHOU (veio: $(ultimo))"
 log "Concluído. Imagens em $OUT/"
 exit 0

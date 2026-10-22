@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Seta para cima preenchida (caps lock travado). Material Symbols (Apache 2.0). viewBox 0 -960 960 960 convertido para 960 com translação. Cor aplicada em tempo de execução. -->
+<!-- Shift ligado: seta preenchida. Desenhado à mão, medido nas capturas do Gboard (1,8 px/dp). Cor aplicada em tempo de execução. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="960"
-    android:viewportHeight="960">
-    <group android:translateY="960">
-        <path android:fillColor="#FF000000" android:pathData="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/>
-    </group>
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FF000000"
+        android:pathData="M12.0,3.0L22.0,13.0L17.0,13.0L17.0,21.0L7.0,21.0L7.0,13.0L2.0,13.0L12.0,3.0Z"/>
 </vector>

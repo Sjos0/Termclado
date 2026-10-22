@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Seta para cima com CONTORNO (traço, sem preenchimento): shift desligado. Material Symbols (Apache 2.0). -->
+<!-- Shift desligado: seta de contorno. Desenhado à mão, medido nas capturas do Gboard (1,8 px/dp). Cor aplicada em tempo de execução. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
-    android:viewportWidth="960" android:viewportHeight="960">
-    <group android:translateY="960">
-        <path android:fillColor="#00000000" android:strokeColor="#FF000000" android:strokeWidth="64"
-            android:strokeLineJoin="round" android:strokeLineCap="round"
-            android:pathData="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/>
-    </group>
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FF000000" android:fillType="evenOdd"
+        android:pathData="M2.5,13.75L8.0,13.75L8.0,20.25L16.0,20.25L16.0,13.75L21.5,13.75L12.0,3.75L2.5,13.75ZM16.84,11.75L14.0,11.75L14.0,18.25L10.0,18.25L10.0,11.75L7.16,11.75L12.0,6.65L16.84,11.75Z"/>
 </vector>
